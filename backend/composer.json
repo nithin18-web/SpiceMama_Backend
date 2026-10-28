@@ -1,0 +1,11 @@
+{
+  "name": "spicemama/backend",
+  "description": "SpiceMama phase-one catalogue API",
+  "type": "project",
+  "require": {
+    "php": "~8.4.0", "ext-pdo": "*", "ext-pdo_mysql": "*",
+    "ext-mbstring": "*", "ext-fileinfo": "*", "ext-gd": "*"
+  },
+  "autoload": {"psr-4": {"SpiceMama\\": "src/"}},
+  "scripts": {"test": "php tests/run.php"}
+}

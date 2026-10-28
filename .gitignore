@@ -1,0 +1,24 @@
+# Secrets at any depth; examples contain placeholders only
+.env
+.env.*
+!.env.example
+# Dependencies at any depth; commit lockfiles
+vendor/
+node_modules/
+.DS_Store
+*.log
+*.sql.gz
+*.dump
+/private/
+/storage-private/
+uploads/
+/backend/storage/*
+!/backend/storage/.gitkeep
+/backend/.phpunit.cache/
+/backend/coverage/
+/dist/
+/releases/
+# Original Images/ and approved frontend assets remain versionable.
+
+# Private backend connection configuration
+/backend/config/local.php
