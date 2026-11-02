@@ -1,0 +1,19 @@
+# TEMPLATE for /home/spicemam/public_html/.htaccess — UNVERIFIED on Webuzo.
+# Test every rule on the actual server before release (owner approval required).
+Options -Indexes
+
+# Private application path for public_html/api/index.php (verify getenv() sees it under the active PHP handler).
+SetEnv SPICEMAMA_APP_PATH /home/spicemam/app
+
+RewriteEngine On
+# Owner must approve forcing HTTPS only after the certificate and renewal are verified:
+# RewriteCond %{HTTPS} !=on
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# All API traffic goes to the front controller; REQUEST_URI keeps the original path.
+RewriteRule ^api/v1(?:/.*)?$ api/index.php [L,QSA]
+
+# Never serve dotfiles, SQL dumps, environment files or source artefacts.
+<FilesMatch "(^\.|\.(?:sql|gz|dump|env|ini|log|md|yaml|lock|json)$)">
+    Require all denied
+</FilesMatch>

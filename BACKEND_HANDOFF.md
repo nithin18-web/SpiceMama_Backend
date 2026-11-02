@@ -1,7 +1,7 @@
-# Backend Developer Handoff — Codex
+# Backend Developer Handoff — Claude
 
 ## Mission
-Build a secure, production-oriented, **shared-hosting-compatible PHP 8.4 backend** for SpiceMama. Claude owns frontend. Do not build/replace frontend design. Work locally first. Never modify live hosting, DNS, databases, credentials or deployment without explicit owner approval.
+Build a secure, production-oriented, **shared-hosting-compatible PHP 8.4 backend** for SpiceMama. Claude owns both frontend and backend. Coordinate UI work with `FRONTEND_HANDOFF.md` and the approved design brief. Work locally first. Never modify live hosting, DNS, databases, credentials or deployment without explicit owner approval.
 
 ## Stack and constraints
 PHP 8.4, MariaDB 10.11, PDO MySQL, Composer dependencies only if compatible with Webuzo and deployment process. No Node server, Redis, Docker, daemon, queue or root access requirement. Memory 64 MB; execution 30 s; multipart POST 8 MB effective cap until changed. Web root `/home/spicemam/public_html`, application code and secrets outside it.
@@ -36,7 +36,8 @@ Code, migrations, tests, OpenAPI conformance checklist, `.env.example` without s
 
 API_CONTRACT.yaml v1.0.0 at root is the development contract. Read
 docs/integration.md, docs/frontend-api-guide.md and docs/database-migration-spec.md.
-Only scaffolding/documentation is currently authorized; production functionality
-and executable migration SQL are not implemented. Exact migration SQL requires
-review/approval before execution. Persistent throttling and migration tracking
-are specified as proposed operational tables. Health route remains deferred.
+Milestone 2 (2026-11-01): all contract operations, migration runner, admin
+provisioning CLI, persistent throttling, uploads and audit logging are implemented
+and tested on local MariaDB 10.11 (see backend/README.md). Migration SQL was executed
+only on disposable local databases; production execution still needs approval.
+Health route remains deferred.

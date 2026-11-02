@@ -1,79 +1,97 @@
-# SpiceMama backend — milestone 1
+# SpiceMama backend — milestone 2
 
-Local implementation started; not release-ready. Root API_CONTRACT.yaml is
-unchanged. No live hosting connection, persistent database, real catalogue or
-production credentials were used.
+All 16 operations in root `API_CONTRACT.yaml` (unchanged, v1.0.0) are implemented
+and tested locally against MariaDB 10.11. Not release-ready: hosting checks,
+owner security decisions and independent review are still required. No live
+hosting, production database, real catalogue or production credentials were used.
 
-## Implemented
+## Request flow
 
-- PHP 8.4 front controller, small namespace autoloader, safe JSON errors/headers.
-- Lazy PDO MySQL connection with native prepared statements, UTC and repeatable-read.
-- GET /api/v1/products, /products/{slug}, /categories; published + active-category
-  filtering, deterministic pagination/gallery order, literal parameterized search.
-- Strict query parsing/validation; rejects duplicate keys, arrays and malformed input.
-- Session/CSRF primitives with idle/absolute expiry, secure cookie defaults.
-- Proposed MariaDB SQL; no migration runner or automatic schema execution.
-- Local same-origin router that only serves approved frontend file types, never
-  repository docs, secrets, backend PHP or original Images/.
+`public/api/index.php` → `Http\Kernel` (routing) → public `CatalogueController`
+(no session) or admin controllers → `Middleware\AdminGuard` (session 401, then
+CSRF 403 on non-GET) → `Validation\AdminInput` (400/415/422) → repositories
+(PDO prepared statements, transactions, product-row locks) with audit rows in the
+same transaction → JSON `{data,meta}` / `{error:{code,message,fields}}`.
 
-## Not yet implemented
+| Area | Code |
+|---|---|
+| Routing, request/response | `src/Http/{Kernel,Request,Response}.php` |
+| Sessions, CSRF, login throttling | `src/Services/{SessionSecurity,NativeSession,LoginThrottle}.php`, `src/Middleware/AdminGuard.php` |
+| Catalogue data | `src/Repositories/{Product,Category,Image,Admin}Repository.php`, `ProductRows.php` |
+| Publication rules | `src/Services/PublicationRules.php` |
+| Uploads | `src/Services/{ImageProcessor,ImageStore}.php` |
+| CLI | `bin/migrate.php`, `bin/create-admin.php`, `bin/maintenance.php` |
 
-All admin endpoints (including login and CSRF issuance) return safe 404 while this
-milestone is incomplete. Login, persistent throttling, authorization middleware,
-product/category mutations, audit writes, upload processing, image management,
-admin provisioning and deployment rules remain future milestones. Session helpers
-alone do not provide admin authentication. No health route is added to the contract.
+## Behaviour notes
 
-## Run local checks
+- Login: pre-login CSRF; attempts counted before password check under row locks
+  (account bucket 5 / 15 min, client bucket 20 / 15 min, 15 min block, provisional
+  pending owner review); constant-cost check for unknown emails; session ID
+  regenerated and CSRF rotated on success. Deactivated admins lose sessions at once.
+- Products are created as drafts; publishing (and editing while published) enforces
+  active category, nonblank short/full description and one image with alt text.
+  `published_at` is set once. Category deactivation hides products only.
+- Uploads: 5 MiB cap and PHP `post_max_size` → 413; MIME by content (JPEG/PNG/WebP)
+  → 415; dimension, pixel, animation, corrupt-data and memory checks → 422; GD
+  re-encode in private staging (strips metadata and appended payloads, EXIF
+  orientation is not applied), random name, then DB insert under lock with file
+  compensation on failure. Deletion unlinks after commit; leftovers are reported by
+  `bin/maintenance.php`.
+- Gallery reorder/remove/upload/publish lock the product row then its images.
+  Lock timeouts/deadlocks return 503 (transaction rolled back; reload and retry).
+- Missing records on `PATCH /admin/categories/{id}` and
+  `POST /admin/products/{id}/status` return 404 `not_found` (contract lists no 404
+  for these two; flagged for owner review rather than changing the contract).
 
-Use PHP 8.4; on this development Mac it is available at
-`/opt/homebrew/opt/php@8.4/bin/php` (not globally linked).
+## Local setup (this Mac)
+
+PHP 8.4: `/opt/homebrew/opt/php@8.4/bin/php` (not globally linked).
+MariaDB 10.11 (Homebrew, keg-only), loopback only, not a login service:
+
+```sh
+/opt/homebrew/opt/mariadb@10.11/bin/mysqld_safe --datadir=/opt/homebrew/var/mysql --bind-address=127.0.0.1 &
+```
+
+Disposable databases `spicemama_local` and `spicemama_test` with user
+`spicemama_local@127.0.0.1` exist; credentials live only in the gitignored
+`config/local.php` (copy `config/local.example.php` to recreate elsewhere).
+Sessions and upload staging use `backend/storage/` (gitignored); uploads go to
+`frontend/uploads/products/` (gitignored) so the dev router serves them.
 
 From repository root:
 
 ```sh
-/opt/homebrew/opt/php@8.4/bin/php backend/tests/run.php
-PHP_BINARY=/opt/homebrew/opt/php@8.4/bin/php python3 backend/tests/http_smoke.py
+PHP=/opt/homebrew/opt/php@8.4/bin/php
+$PHP backend/bin/migrate.php            # dry run; add --apply to execute
+$PHP backend/bin/create-admin.php --email=you@example.test --name="Your Name"
+$PHP backend/bin/seed-dev.php             # LOCAL ONLY: sample catalogue (skips existing slugs)
+$PHP -d display_errors=0 -S 127.0.0.1:8080 backend/bin/dev-router.php
 ```
 
-The 48 initial checks use disposable in-memory SQLite fixtures for repository
-behavior; SQLite is a development-test dependency only. They do not validate
-MariaDB syntax, locking or production hosting. No database files are written.
-Composer is optional for this milestone: runtime dependencies are PHP extensions
-only, and bootstrap/autoload.php works without vendor/. A lockfile has not been
-created because Composer dependency installation has not been run.
+`display_errors=0` matters: PHP prints oversized-POST warnings before any script runs.
 
-Serve on loopback from repository root (local only):
+## Tests
 
 ```sh
-/opt/homebrew/opt/php@8.4/bin/php -S 127.0.0.1:8080 backend/bin/dev-router.php
+$PHP backend/tests/run.php                                        # 71 unit checks, SQLite fixtures
+DB_DATABASE=spicemama_test $PHP backend/tests/integration.php     # 164 MariaDB checks
+PHP_BINARY=$PHP python3 backend/tests/http_smoke.py               # 58 HTTP cases
+PHP_BINARY=$PHP node tools/e2e-live.mjs                           # 49 browser checks, frontend + API
 ```
 
-Successful database-backed requests require the next approval gate below. Until
-configured, public endpoints return safe 503 JSON; invalid requests are validated
-before connection, and unknown/admin routes return 404 without database access.
-Frontend pages are owned by Claude and may not exist yet.
+Integration and HTTP suites drop and rebuild `spicemama_test` and refuse any
+database not ending in `_test`. See `tests/README.md` for coverage.
 
-## Configuration and next approval gate
+## Production mapping
 
-Review database/migrations/001_initial_schema.sql and its README. No SQL was
-executed. Owner approval is required before executing it, including local MariaDB
-integration setup under the current migration-review agreement.
+Public entry point → `public_html/api/index.php`; bootstrap, src, bin, migrations
+and config → `/home/spicemam/app` with `SPICEMAMA_APP_PATH` set by the server.
+See `deploy/README.md` for templates, manifest and runbook. Do not deploy without
+owner approval.
 
-Once authorized and a dedicated local database exists, copy config/local.example.php
-to config/local.php (ignored), export DB_HOST/DB_PORT/DB_DATABASE/DB_USERNAME/
-DB_PASSWORD to the PHP process, and run the local server. No .env parser is used;
-copying .env.example to .env alone does not configure the application. Never put
-production credentials in local config or expose config/ via a web server.
+## Open before release
 
-Production mapping: public API entry point goes in public_html/api; bootstrap,
-config and src stay in /home/spicemam/app. Server configuration must set
-SPICEMAMA_APP_PATH to that private directory. Rewrite and non-executable upload
-rules require later Webuzo verification. Do not deploy this milestone.
-
-## Review notes
-
-Local tests cover validation, public visibility, parameterized search, rollback,
-response types and session primitives. MariaDB 10.11 behavior, concurrency, live
-rewrite rules and extension/resource limits remain unverified. Review before
-release; independent review and full security/integration tests are still needed.
+Owner decisions: throttle thresholds, audit/throttle retention, admin users,
+`post_max_size`, HTTPS redirect. Hosting checks: fileinfo/GD WebP, rewrite and
+uploads rules, `SetEnv` visibility, reverse proxy (`REMOTE_ADDR`), permissions,
+backups. Independent security review.

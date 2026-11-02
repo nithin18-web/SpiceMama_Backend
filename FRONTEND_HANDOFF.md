@@ -1,7 +1,7 @@
 # Frontend Developer Handoff — Claude
 
 ## Mission
-Build the complete **frontend** for SpiceMama's premium Indian spices product showcase. Backend will be written separately by Codex using PHP 8.4 and MariaDB. Do not build a competing backend, invent API paths, create a database or deploy to hosting.
+Build the complete **frontend** for SpiceMama's premium Indian spices product showcase. Claude also owns the PHP 8.4 and MariaDB backend; follow `BACKEND_HANDOFF.md` for backend work and integrate with the existing implementation. Do not invent API paths, create a database or deploy to hosting without approval.
 
 ## Read before coding
 Read `README.md`, `DESIGN_CONTENT_BRIEF.md`, `ARCHITECTURE.md`, and `API_CONTRACT.yaml`. Treat the API contract as authoritative. Ask for approval before changing data shapes or endpoint names.

@@ -35,7 +35,7 @@ final class CatalogueController
             }
             return new Response(200, ['data' => ($this->reader)()->categories()]);
         }
-        // Do not expose partially implemented admin operations.
+        // Admin routes are dispatched by Http\Kernel, never by this controller.
         throw new ApiException(404, 'not_found', 'Endpoint not found.');
     }
 }
