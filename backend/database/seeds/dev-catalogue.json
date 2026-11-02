@@ -1,0 +1,211 @@
+{
+  "_note": "DEVELOPMENT ONLY. Mirrors frontend/mock/fixtures.js. Product text comes from the approved pack art; the four categories are a placeholder grouping the owner has not confirmed. Never load into production without owner approval.",
+  "categories": [
+    {
+      "name": "Chilli powders",
+      "slug": "chilli-powders",
+      "description": "Chilli powders made from red chillies from Guntur.",
+      "sort_order": 1,
+      "is_active": true
+    },
+    {
+      "name": "Spices",
+      "slug": "spices",
+      "description": null,
+      "sort_order": 2,
+      "is_active": true
+    },
+    {
+      "name": "Masalas",
+      "slug": "masalas",
+      "description": null,
+      "sort_order": 3,
+      "is_active": true
+    },
+    {
+      "name": "Flours",
+      "slug": "flours",
+      "description": null,
+      "sort_order": 4,
+      "is_active": true
+    }
+  ],
+  "products": [
+    {
+      "slug": "guntur-gold-premium-chilli-powder",
+      "name": "Guntur Gold Premium Chilli Powder",
+      "category": "chilli-powders",
+      "short_description": "A blend of premium dried red chillies.",
+      "description": "A perfect blend of premium dried red chillies.",
+      "pack_size_label": null,
+      "ingredients": null,
+      "sort_order": 1,
+      "images": [
+        {
+          "file": "frontend/assets/images/packs/guntur-gold-premium-chilli-powder.webp",
+          "alt_text": "Guntur Gold Premium Chilli Powder stand-up pouch"
+        }
+      ]
+    },
+    {
+      "slug": "chilli-powder-guntur-special",
+      "name": "Chilli Powder",
+      "category": "chilli-powders",
+      "short_description": "Red and hot Guntur chilli, from the premium range.",
+      "description": "Made from red chillies from Guntur, packed to keep their freshness and flavour.",
+      "pack_size_label": "500 g",
+      "ingredients": "Chilli",
+      "sort_order": 2,
+      "images": [
+        {
+          "file": "frontend/assets/images/packs/chilli-powder-guntur-special.webp",
+          "alt_text": "Spice Mama Guntur Special Chilli Powder pack"
+        }
+      ]
+    },
+    {
+      "slug": "coriander-powder",
+      "name": "Coriander Powder",
+      "category": "spices",
+      "short_description": "Green coriander from M.P. and Rajasthan.",
+      "description": "Made from green coriander from Madhya Pradesh and Rajasthan.",
+      "pack_size_label": "100 g",
+      "ingredients": "Coriander",
+      "sort_order": 3,
+      "images": [
+        {
+          "file": "frontend/assets/images/packs/coriander-powder.webp",
+          "alt_text": "Spice Mama Aroma Special Coriander Powder pack"
+        }
+      ]
+    },
+    {
+      "slug": "oont-chap-chilli-powder",
+      "name": "Chilli Powder, Pure Spices",
+      "category": "chilli-powders",
+      "short_description": "Made from handpicked Guntur chillies.",
+      "description": "Made from handpicked Guntur chillies.",
+      "pack_size_label": "500 g",
+      "ingredients": null,
+      "sort_order": 4,
+      "images": [
+        {
+          "file": "frontend/assets/images/packs/oont-chap-chilli-powder.webp",
+          "alt_text": "Oont Chap Chilli Powder, Pure Spices pack"
+        }
+      ]
+    },
+    {
+      "slug": "turmeric-powder",
+      "name": "Turmeric Powder",
+      "category": "spices",
+      "short_description": "Turmeric from Erode, with no added colours.",
+      "description": "Made from fresh turmeric from Erode.",
+      "pack_size_label": "100 g",
+      "ingredients": "Turmeric",
+      "sort_order": 5,
+      "images": [
+        {
+          "file": "frontend/assets/images/packs/turmeric-powder.webp",
+          "alt_text": "Spice Mama Aroma Special Turmeric Powder pack"
+        }
+      ]
+    },
+    {
+      "slug": "sambar-powder",
+      "name": "Sambar Powder",
+      "category": "masalas",
+      "short_description": "A premium blend of aromatic spices for sambar.",
+      "description": "A premium blend of aromatic spices for sambar.",
+      "pack_size_label": "100 g",
+      "ingredients": null,
+      "sort_order": 6,
+      "images": [
+        {
+          "file": "frontend/assets/images/packs/sambar-powder.webp",
+          "alt_text": "Spice Mama Sambar Powder pack"
+        }
+      ]
+    },
+    {
+      "slug": "rasam-powder",
+      "name": "Rasam Powder",
+      "category": "masalas",
+      "short_description": "A premium blend of aromatic spices for rasam.",
+      "description": "A premium blend of aromatic spices for rasam.",
+      "pack_size_label": null,
+      "ingredients": null,
+      "sort_order": 7,
+      "images": [
+        {
+          "file": "frontend/assets/images/packs/rasam-powder.webp",
+          "alt_text": "Spice Mama Rasam Powder pack"
+        }
+      ]
+    },
+    {
+      "slug": "kasuri-methi",
+      "name": "Kasuri Methi",
+      "category": "spices",
+      "short_description": "Dried fenugreek leaves.",
+      "description": "Dried fenugreek leaves.",
+      "pack_size_label": "100 g",
+      "ingredients": null,
+      "sort_order": 8,
+      "images": [
+        {
+          "file": "frontend/assets/images/packs/kasuri-methi.webp",
+          "alt_text": "Spice Mama Kasuri Methi pack"
+        }
+      ]
+    },
+    {
+      "slug": "garam-masala",
+      "name": "Garam Masala",
+      "category": "masalas",
+      "short_description": "A premium blend of aromatic whole spices, ground.",
+      "description": "A premium blend of aromatic whole spices, ground.",
+      "pack_size_label": null,
+      "ingredients": null,
+      "sort_order": 9,
+      "images": [
+        {
+          "file": "frontend/assets/images/packs/garam-masala.webp",
+          "alt_text": "Spice Mama Garam Masala pack"
+        }
+      ]
+    },
+    {
+      "slug": "chicken-masala",
+      "name": "Chicken Masala",
+      "category": "masalas",
+      "short_description": "A premium spice blend for chicken curry.",
+      "description": "A premium spice blend for chicken curry.",
+      "pack_size_label": null,
+      "ingredients": null,
+      "sort_order": 10,
+      "images": [
+        {
+          "file": "frontend/assets/images/packs/chicken-masala.webp",
+          "alt_text": "Spice Mama Chicken Masala pack"
+        }
+      ]
+    },
+    {
+      "slug": "ragi-flour",
+      "name": "Ragi Flour",
+      "category": "flours",
+      "short_description": "Finger millet flour, for dosa, roti and mudde.",
+      "description": "Finger millet flour, for dosa, roti and mudde.",
+      "pack_size_label": "500 g",
+      "ingredients": null,
+      "sort_order": 11,
+      "images": [
+        {
+          "file": "frontend/assets/images/packs/ragi-flour.webp",
+          "alt_text": "Spice Mama Ragi Flour pack"
+        }
+      ]
+    }
+  ]
+}

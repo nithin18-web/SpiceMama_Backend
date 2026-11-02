@@ -2,13 +2,13 @@
 
 **Version:** 1.0 | **Date:** 2026-10-28 | **Status:** Planning, no code deployed
 
-This pack is the shared source of truth for the SpiceMama website. Hand `FRONTEND_HANDOFF.md` and `DESIGN_CONTENT_BRIEF.md` to the Claude/frontend developer. Hand `BACKEND_HANDOFF.md`, `API_CONTRACT.yaml`, and `DATABASE_SCHEMA.md` to Codex/backend developer. Both must read `ARCHITECTURE.md` and `DECISIONS_AND_CHECKLIST.md`.
+This pack is the shared source of truth for the SpiceMama website. Claude owns frontend and backend development. Read `CLAUDE.md` and use `CLAUDE_START_PROMPT.md` to continue in Claude Code. Frontend work follows `FRONTEND_HANDOFF.md` and `DESIGN_CONTENT_BRIEF.md`; backend work follows `BACKEND_HANDOFF.md`, `API_CONTRACT.yaml`, and `DATABASE_SCHEMA.md`. Also read `ARCHITECTURE.md` and `DECISIONS_AND_CHECKLIST.md`.
 
 ## Confirmed context
 - Brand/site: SpiceMama; domain `spicemama.in`.
 - Hosting: VapourHost Power Plan 2, Webuzo; PHP 8.4; MariaDB 10.11; public document root `/home/spicemam/public_html`.
 - Frontend: HTML, CSS, vanilla JavaScript (unless owner approves a change); Claude/frontend developer owns UI.
-- Backend: PHP 8.4 + PDO + MariaDB; Codex/backend developer owns APIs, security, migrations and tests.
+- Backend: PHP 8.4 + PDO + MariaDB; Claude owns APIs, security, migrations and tests.
 - Phase 1: product showcase, categories, product detail, brand/contact information, secure admin product/category/image management; **no online checkout yet**.
 - Future: Indian e-commerce (prices, inventory, cart, orders, payment gateway, shipping), designed as a later phase.
 

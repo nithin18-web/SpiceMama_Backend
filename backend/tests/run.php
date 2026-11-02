@@ -6,7 +6,8 @@ use SpiceMama\Controllers\CatalogueController;
 use SpiceMama\Http\{ApiException, Request, Response};
 use SpiceMama\Repositories\PdoCatalogueRepository;
 use SpiceMama\Services\SessionSecurity;
-use SpiceMama\Validation\CatalogueQuery;
+use SpiceMama\Support\Migrator;
+use SpiceMama\Validation\{AdminInput, CatalogueQuery};
 
 $checks = 0;
 function check(bool $condition, string $label): void
@@ -91,7 +92,7 @@ check($controller->handle(new Request('GET','/api/v1/products',['per_page'=>'1']
 check(count($controller->handle(new Request('GET','/api/v1/categories'))->body['data']) === 1, 'active categories only');
 check(is_bool($repository->categories()[0]['is_active']), 'JSON boolean type');
 rejects(fn() => $controller->handle(new Request('POST','/api/v1/products')),404,'public write disabled');
-rejects(fn() => $controller->handle(new Request('POST','/api/v1/admin/login')),404,'unfinished admin not exposed');
+rejects(fn() => $controller->handle(new Request('POST','/api/v1/admin/login')),404,'catalogue controller never serves admin routes');
 rejects(fn() => $controller->handle(new Request('GET','/api/v1/categories',['q'=>'x'])),422,'category unknown query');
 $db->exec("UPDATE product_images SET file_path='../secret' WHERE id=1");
 try {
@@ -102,4 +103,29 @@ try {
     check(!$db->inTransaction(), 'repository rollback after metadata error');
 }
 check(Response::error(new ApiException(422,'validation_failed','Invalid',['q'=>'Too long']))->body['error']['code'] === 'validation_failed','error envelope');
-echo "PASS: $checks checks. SQLite fixtures only; MariaDB integration pending SQL approval.\n";
+
+// Admin input validation (no database).
+check(AdminInput::productCreate(['name' => 'N', 'slug' => 'n', 'category_id' => 1])['pack_size_label'] === null, 'product create defaults');
+check(AdminInput::categoryCreate(['name' => 'N', 'slug' => 'n'])['is_active'] === false, 'category inactive by default');
+rejects(fn() => AdminInput::productPatch([]), 422, 'empty patch');
+rejects(fn() => AdminInput::productPatch(['status' => 'published']), 422, 'status not patchable');
+rejects(fn() => AdminInput::productPatch(['sort_order' => 1.0]), 422, 'float is not integer');
+rejects(fn() => AdminInput::productPatch(['category_id' => '9007199254740992']), 422, 'big integer string');
+rejects(fn() => AdminInput::productPatch(['name' => "\u{00A0}\u{3000}"]), 422, 'Unicode-blank name');
+rejects(fn() => AdminInput::productPatch(['short_description' => str_repeat('界', 501)]), 422, 'character bound');
+check(AdminInput::productPatch(['ingredients' => null]) === ['ingredients' => null], 'nullable patch');
+rejects(fn() => AdminInput::categoryPatch(['is_active' => 1]), 422, 'strict boolean');
+rejects(fn() => AdminInput::imageOrder(['image_ids' => [1, 1]]), 422, 'unique image ids');
+rejects(fn() => AdminInput::imageOrder(['image_ids' => ['a' => 1]]), 422, 'image ids must be a list');
+rejects(fn() => AdminInput::login(['email' => 'not-an-email', 'password' => 'x']), 422, 'login email format');
+check(AdminInput::login(['email' => ' A@Example.TEST ', 'password' => 'x'])['email'] === 'a@example.test', 'email normalised');
+rejects(fn() => AdminInput::id('0'), 422, 'zero id');
+rejects(fn() => AdminInput::upload(['product_id' => ['1']], []), 400, 'nested form field');
+rejects(fn() => AdminInput::upload(['product_id' => '1', 'extra' => 'x'], []), 422, 'unknown form field');
+check(AdminInput::blank(" \t\u{00A0}") && !AdminInput::blank(' x '), 'blank detection');
+rejects(fn() => (new Request('POST', '/x', headers: ['content-type' => 'text/plain'], body: '{}'))->json(), 415, 'JSON media type');
+rejects(fn() => (new Request('POST', '/x', headers: ['content-type' => 'application/json'], body: '[1]'))->json(), 400, 'JSON object required');
+check((new Request('POST', '/x', headers: ['content-type' => 'application/json; charset=utf-8'], body: '{"a":1}'))->json() === ['a' => 1], 'JSON charset parameter');
+check(Migrator::statements("-- c\nCREATE TABLE a (x INT);\n\nCREATE TABLE b (y INT);\n") === ['CREATE TABLE a (x INT)', 'CREATE TABLE b (y INT)'], 'migration statement split');
+check(count(Migrator::statements((string) file_get_contents(dirname(__DIR__) . '/database/migrations/001_initial_schema.sql'))) === 8, 'initial migration has eight tables');
+echo "PASS: $checks checks. SQLite fixtures only; run tests/integration.php for MariaDB.\n";

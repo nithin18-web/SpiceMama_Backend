@@ -1,0 +1,8 @@
+; TEMPLATE for /home/spicemam/public_html/.user.ini (PHP-FPM/CGI) — verify it takes effect.
+; Startup warnings (for example oversized POST bodies) are emitted before any
+; script runs, so display_errors must be off at the PHP configuration level.
+display_errors = Off
+display_startup_errors = Off
+log_errors = On
+; Keep effective post_max_size above the 5 MiB image limit plus multipart overhead.
+; Currently observed: post_max_size=8M, upload_max_filesize=20M (8M is the real cap).

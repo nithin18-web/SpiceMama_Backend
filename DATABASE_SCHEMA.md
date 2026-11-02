@@ -1,6 +1,6 @@
 # SpiceMama — Proposed Phase-1 Data Model
 
-These are logical tables, not yet executed SQL. Codex must propose migration SQL and obtain approval.
+These are logical tables, not yet executed SQL. Claude must propose migration SQL and obtain approval.
 
 ## admins
 `id BIGINT PK`, `email VARCHAR(254) UNIQUE`, `password_hash VARCHAR(255)`, `display_name VARCHAR(120)`, `role ENUM('admin')`, `is_active BOOLEAN`, `last_login_at DATETIME NULL`, `created_at`, `updated_at`. No plaintext passwords; one-time secure provisioning.

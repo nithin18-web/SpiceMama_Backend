@@ -1,9 +1,11 @@
 # Migration review package
 
-`001_initial_schema.sql` is proposed MariaDB 10.11 SQL, not executed or approved
-for execution. It creates eight tables in an already selected database, without
-creating a database, inserting users/content or connecting to hosting. No migration
-runner or application-startup migration exists.
+`001_initial_schema.sql` creates eight tables in an already selected database,
+without creating a database, inserting users/content or connecting to hosting.
+With owner approval it has been applied to the disposable local databases
+`spicemama_local` and `spicemama_test` through `bin/migrate.php` (dry run by
+default, `--apply` to execute). There is no application-startup migration.
+Production execution still requires separate approval.
 
 Review against root DATABASE_SCHEMA.md and docs/database-migration-spec.md.
 The SQL uses ASCII binary slugs/paths (other content utf8mb4_unicode_ci), matching

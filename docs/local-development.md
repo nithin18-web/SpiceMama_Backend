@@ -1,13 +1,33 @@
 # Local development status update
 
-Backend milestone 1 is now implemented. Read [backend/README.md](../backend/README.md)
-for current runnable commands and limitations. The original foundation notes below
-are historical: the local router, public APIs, composer.json and review-only SQL
-now exist. No MariaDB database or migrations have been executed. The .env file is
-not automatically loaded; current private configuration uses config/local.php and
-exported environment variables. Admin endpoints remain unavailable pending their
-implementation/testing. PHP 8.4 was installed locally; no persistent PHP service
-was started.
+Backend milestone 2 is implemented. Read [backend/README.md](../backend/README.md)
+for current runnable commands. With owner approval (2026-11-01), MariaDB 10.11 was
+installed via Homebrew and runs on 127.0.0.1 only (not as a login service); the
+disposable databases spicemama_local and spicemama_test exist and the initial
+migration was applied to them. The .env file is not automatically loaded; private
+configuration uses the gitignored config/local.php.
+
+## Run the whole site (frontend + API) on one address
+
+The frontend from `nithin18-web/SpiceMama_Frontend` was copied into `frontend/`
+(and its preview helpers into `tools/`) on 2026-11-01. From the repository root:
+
+```sh
+/opt/homebrew/opt/php@8.4/bin/php -d display_errors=0 -S 127.0.0.1:8080 backend/bin/dev-router.php
+```
+
+Open http://127.0.0.1:8080/?api=live to use the real API (choice kept per tab);
+`?api=mock` switches back to the in-browser sample data in `frontend/mock/`.
+Admin: create a local account once with `backend/bin/create-admin.php`.
+`node tools/serve.mjs` still serves the frontend alone (mock mode only).
+
+Live browser test (headless Chrome, disposable spicemama_test database):
+
+```sh
+PHP_BINARY=/opt/homebrew/opt/php@8.4/bin/php node tools/e2e-live.mjs
+```
+
+The notes below are historical.
 
 ---
 

@@ -1,0 +1,16 @@
+# TEMPLATE for /home/spicemam/public_html/uploads/products/.htaccess — UNVERIFIED on Webuzo.
+# Only server-generated image names are served; everything else (including any
+# script) is denied, and no handler may execute files here.
+Options -Indexes -ExecCGI
+RemoveHandler .php .phtml .phar .php3 .php4 .php5 .php7 .php8 .pl .py .cgi .sh
+RemoveType .php .phtml .phar
+Require all denied
+<FilesMatch "^[a-f0-9]{32}\.(?:jpg|png|webp)$">
+    Require all granted
+</FilesMatch>
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set Content-Security-Policy "default-src 'none'; sandbox"
+</IfModule>
+# Verification: upload a test.php here manually on staging and confirm it is
+# denied (403/404) and never executed, then delete it.

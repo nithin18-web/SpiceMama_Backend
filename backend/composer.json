@@ -7,5 +7,5 @@
     "ext-mbstring": "*", "ext-fileinfo": "*", "ext-gd": "*"
   },
   "autoload": {"psr-4": {"SpiceMama\\": "src/"}},
-  "scripts": {"test": "php tests/run.php"}
+  "scripts": {"test": "php tests/run.php", "test:integration": "php tests/integration.php"}
 }

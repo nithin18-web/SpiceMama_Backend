@@ -5,12 +5,16 @@ use SpiceMama\Http\ApiException;
 
 final class CatalogueQuery
 {
-    public static function parse(array $query): array
+    public const STATUSES = ['draft', 'published', 'archived'];
+
+    /** Admin lists additionally accept an exact status filter. */
+    public static function parse(array $query, bool $admin = false): array
     {
-        if (array_diff(array_keys($query), ['category', 'q', 'page', 'per_page']) !== []) {
+        $allowed = ['category', 'q', 'page', 'per_page', ...($admin ? ['status'] : [])];
+        if (array_diff(array_keys($query), $allowed) !== []) {
             throw new ApiException(422, 'validation_failed', 'Unknown query parameter.');
         }
-        $result = ['page' => 1, 'per_page' => 12, 'q' => '', 'category' => null];
+        $result = ['page' => 1, 'per_page' => 12, 'q' => '', 'category' => null, 'status' => null];
         foreach ($query as $key => $value) {
             if (!is_string($value) || !mb_check_encoding($value, 'UTF-8')) {
                 throw new ApiException(400, 'bad_request', 'Query values must be UTF-8 strings.');
@@ -21,6 +25,11 @@ final class CatalogueQuery
                     throw new ApiException(422, 'validation_failed', 'Invalid pagination.', [$key => "Use an integer between 1 and $maximum."]);
                 }
                 $result[$key] = (int) $value;
+            } elseif ($key === 'status') {
+                if (!in_array($value, self::STATUSES, true)) {
+                    throw new ApiException(422, 'validation_failed', 'Invalid status.', ['status' => 'Use draft, published or archived.']);
+                }
+                $result[$key] = $value;
             } elseif ($key === 'category') {
                 self::slug($value, 160);
                 $result[$key] = $value;
