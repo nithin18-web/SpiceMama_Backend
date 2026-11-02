@@ -1,9 +1,9 @@
-# TEMPLATE for /home/spicemam/public_html/.htaccess — UNVERIFIED on Webuzo.
+# TEMPLATE for /home/spicemam/public_html/.htaccess — LiteSpeed reads Apache rules; verify on the server.
 # Test every rule on the actual server before release (owner approval required).
 Options -Indexes
 
-# Private application path for public_html/api/index.php (verify getenv() sees it under the active PHP handler).
-SetEnv SPICEMAMA_APP_PATH /home/spicemam/app
+# api/index.php finds the private app at /home/spicemam/app automatically (sibling of public_html).
+ErrorDocument 404 /404.html
 
 RewriteEngine On
 # Owner must approve forcing HTTPS only after the certificate and renewal are verified:

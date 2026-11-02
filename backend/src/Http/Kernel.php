@@ -40,7 +40,7 @@ final class Kernel
     {
         $db = fn(): PDO => $this->db();
         $guard = new AdminGuard($this->session, $db, $this->clock);
-        $auth = new AdminAuthController($guard, $db, $this->clock, fn(): LoginThrottle => new LoginThrottle($this->db(), (string) ($this->config['throttle_key'] ?? ''), $this->clock));
+        $auth = new AdminAuthController($guard, $db, $this->clock, fn(): LoginThrottle => new LoginThrottle($this->db(), self::throttleKey($this->config), $this->clock));
         $categories = new AdminCategoryController($guard, $db, $this->clock);
         $products = new AdminProductController($guard, $db, $this->clock);
         $images = new AdminImageController($guard, $db, $this->clock, fn(): ImageStore => new ImageStore(
@@ -79,6 +79,33 @@ final class Kernel
     {
         $root = rtrim((string) ($config['storage_path'] ?? ''), '/');
         return $root === '' ? '' : $root . '/' . $directory;
+    }
+
+    /**
+     * Configured key, else a random key generated once in private storage (mode 600),
+     * so no secret has to be copied by hand during deployment. '' when storage is unset.
+     */
+    public static function throttleKey(array $config): string
+    {
+        $key = (string) ($config['throttle_key'] ?? '');
+        $directory = self::storage($config, 'keys');
+        if ($key !== '' || $directory === '') {
+            return $key;
+        }
+        $file = $directory . '/login-throttle.key';
+        if (!is_file($file)) {
+            if (!is_dir($directory)) {
+                mkdir($directory, 0700, true);
+            }
+            // 'x' mode: a concurrent first request cannot overwrite a key already written.
+            $handle = @fopen($file, 'x');
+            if ($handle !== false) {
+                fwrite($handle, bin2hex(random_bytes(32)));
+                fclose($handle);
+                chmod($file, 0600);
+            }
+        }
+        return trim((string) file_get_contents($file));
     }
 
     private function db(): PDO

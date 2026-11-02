@@ -1,8 +1,10 @@
 <?php
 declare(strict_types=1);
 
-// Deployment: set SPICEMAMA_APP_PATH to /home/spicemam/app outside public_html.
-$app = getenv('SPICEMAMA_APP_PATH') ?: dirname(__DIR__, 2);
+// Private application directory: SPICEMAMA_APP_PATH if the server sets it, else the
+// repository layout (backend/public/api -> backend), else the hosting layout
+// (/home/spicemam/public_html/api -> /home/spicemam/app, outside the web root).
+$app = getenv('SPICEMAMA_APP_PATH') ?: (is_file(dirname(__DIR__, 2) . '/bootstrap/autoload.php') ? dirname(__DIR__, 2) : dirname(__DIR__, 2) . '/app');
 ini_set('display_errors', '0');
 error_reporting(E_ALL);
 require $app . '/bootstrap/autoload.php';
