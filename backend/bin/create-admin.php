@@ -19,7 +19,8 @@ if (strlen($email) > 254 || filter_var($email, FILTER_VALIDATE_EMAIL) === false)
 if ($name === '' || mb_strlen($name) > 120) {
     cli_fail('Provide --name of 1 to 120 characters.');
 }
-$tty = function_exists('posix_isatty') ? posix_isatty(STDIN) : stream_isatty(STDIN);
+// stty hides typing on macOS/Linux; Windows consoles have no stty, so input is visible there.
+$tty = PHP_OS_FAMILY !== 'Windows' && (function_exists('posix_isatty') ? posix_isatty(STDIN) : stream_isatty(STDIN));
 if ($tty) {
     fwrite(STDOUT, 'Password (min 12 characters): ');
     shell_exec('stty -echo');

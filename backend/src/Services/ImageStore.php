@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace SpiceMama\Services;
 use SpiceMama\Http\ApiException;
+use SpiceMama\Support\Paths;
 
 /**
  * Generated product-image files. Processing happens in private staging; only
@@ -15,7 +16,7 @@ final class ImageStore
 
     public function __construct(private readonly string $uploadDirectory, private readonly string $stagingDirectory)
     {
-        if (!str_starts_with($uploadDirectory, '/') || !str_starts_with($stagingDirectory, '/')) {
+        if (!Paths::isAbsolute($uploadDirectory) || !Paths::isAbsolute($stagingDirectory)) {
             throw new ApiException(503, 'unavailable', 'Image storage is not configured.');
         }
     }

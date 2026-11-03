@@ -1,6 +1,6 @@
 # Claude project instructions
 
-Read and follow `AGENTS.md`, `README.md`, `ARCHITECTURE.md`, and `API_CONTRACT.yaml` before editing.
+Start with `WINDOWS_INSTRUCTIONS.md` (current status, pending work, live-server facts, Windows setup). Then read and follow `AGENTS.md`, `README.md`, `ARCHITECTURE.md`, and `API_CONTRACT.yaml` before editing.
 
 Claude owns both `frontend/` and `backend/`. Use `FRONTEND_HANDOFF.md` and `DESIGN_CONTENT_BRIEF.md` for UI work; use `BACKEND_HANDOFF.md`, `DATABASE_SCHEMA.md`, and `backend/README.md` for backend work. Read `DECISIONS_AND_CHECKLIST.md` and `docs/integration.md` for approvals and integration requirements.
 

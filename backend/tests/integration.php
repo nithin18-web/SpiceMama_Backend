@@ -188,7 +188,7 @@ $first = status(send($pid, image('jpeg', 40, 30, '<?php echo "pwned"; ?>')), 201
 check(preg_match('#^/uploads/products/[a-f0-9]{32}\.jpg$#', $first['url']) === 1 && $first['sort_order'] === 0, 'generated public URL');
 $stored = $uploads . '/' . basename($first['url']);
 check(is_file($stored) && !str_contains(file_get_contents($stored), '<?php'), 're-encoding strips appended payload');
-check(decoct(fileperms($stored) & 0777) === '644', 'upload not executable');
+check(PHP_OS_FAMILY === 'Windows' || decoct(fileperms($stored) & 0777) === '644', 'upload not executable'); // no Unix modes on Windows
 $second = status(send($pid, image('png'), ''), 201, 'upload png without alt')['data'];
 $third = status(send($pid, image('webp')), 201, 'upload webp')['data'];
 check($third['sort_order'] === 2, 'appended to gallery');

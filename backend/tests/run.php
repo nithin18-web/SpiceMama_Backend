@@ -128,4 +128,5 @@ rejects(fn() => (new Request('POST', '/x', headers: ['content-type' => 'applicat
 check((new Request('POST', '/x', headers: ['content-type' => 'application/json; charset=utf-8'], body: '{"a":1}'))->json() === ['a' => 1], 'JSON charset parameter');
 check(Migrator::statements("-- c\nCREATE TABLE a (x INT);\n\nCREATE TABLE b (y INT);\n") === ['CREATE TABLE a (x INT)', 'CREATE TABLE b (y INT)'], 'migration statement split');
 check(count(Migrator::statements((string) file_get_contents(dirname(__DIR__) . '/database/migrations/001_initial_schema.sql'))) === 8, 'initial migration has eight tables');
+check(SpiceMama\Support\Paths::isAbsolute('/home/x') && SpiceMama\Support\Paths::isAbsolute('C:\\data') && SpiceMama\Support\Paths::isAbsolute('D:/data') && !SpiceMama\Support\Paths::isAbsolute('storage') && !SpiceMama\Support\Paths::isAbsolute(''), 'absolute paths on Unix and Windows');
 echo "PASS: $checks checks. SQLite fixtures only; run tests/integration.php for MariaDB.\n";
