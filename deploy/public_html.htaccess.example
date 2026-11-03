@@ -1,19 +1,31 @@
-# TEMPLATE for /home/spicemam/public_html/.htaccess — LiteSpeed reads Apache rules; verify on the server.
-# Test every rule on the actual server before release (owner approval required).
+# TEMPLATE for /home/spicemam/public_html/.htaccess (LiteSpeed reads Apache rules).
 Options -Indexes
 
 # api/index.php finds the private app at /home/spicemam/app automatically (sibling of public_html).
 ErrorDocument 404 /404.html
 
 RewriteEngine On
-# Owner must approve forcing HTTPS only after the certificate and renewal are verified:
-# RewriteCond %{HTTPS} !=on
-# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+# HTTPS only (Let's Encrypt via Webuzo Automatic SSL, verified 2026-11-03).
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# --- Optional pre-launch page ------------------------------------------------
+# Shows /maintenance.html instead of the site until LAUNCH_UTC (YYYYMMDDHHMMSS, server clock is UTC);
+# admin, API, assets and uploads keep working. Opening /?preview=TOKEN once sets a 7-day cookie so
+# that browser sees the real site. Replace TOKEN with a random value and uncomment to enable.
+# If the server ignores %{TIME}, the page stays up until this block is removed (never opens early).
+# RewriteCond %{QUERY_STRING} (^|&)preview=TOKEN(&|$)
+# RewriteRule ^ - [CO=sm_preview:TOKEN:.spicemama.in:10080:/:1:1]
+# RewriteCond %{TIME} <LAUNCH_UTC
+# RewriteCond %{QUERY_STRING} !(^|&)preview=TOKEN(&|$)
+# RewriteCond %{HTTP_COOKIE} !(^|;\s*)sm_preview=TOKEN
+# RewriteCond %{REQUEST_URI} !^/(maintenance\.html|robots\.txt|assets/|api/|admin/|uploads/)
+# RewriteRule ^ /maintenance.html [L]
 
 # All API traffic goes to the front controller; REQUEST_URI keeps the original path.
 RewriteRule ^api/v1(?:/.*)?$ api/index.php [L,QSA]
 
-# Never serve dotfiles, SQL dumps, environment files or source artefacts.
-<FilesMatch "(^\.|\.(?:sql|gz|dump|env|ini|log|md|yaml|lock|json)$)">
+# Never serve dotfiles, PHP error_log files, SQL dumps, environment files or source artefacts.
+<FilesMatch "(^\.|^error_log$|\.(?:sql|gz|dump|env|ini|log|md|yaml|lock|json)$)">
     Require all denied
 </FilesMatch>

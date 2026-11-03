@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Opening this Diwali · Spice Mama</title>
+<meta name="description" content="The Spice Mama website opens on Diwali, Sunday 8 November 2026.">
+<meta name="theme-color" content="#FBF4E6">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/assets/images/brand/logo-sm.webp" type="image/webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Guntur:wght@400;500;600;700&family=Rozha+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<style>
+  /* Pre-launch page shown by public_html/.htaccess until the Diwali launch. Self-contained apart from tokens. */
+  * { box-sizing: border-box }
+  body { margin: 0; min-height: 100dvh; display: grid; place-items: center; padding: var(--pad);
+         background: var(--ivory); color: var(--ink); font: 400 var(--fs-body)/1.6 var(--body) }
+  body > main { min-width: 0 }
+  main { width: min(640px, 100%); text-align: center; display: grid; gap: 22px; justify-items: center }
+  .logo { width: 180px; height: auto; background: var(--white); border-radius: var(--r-lg); padding: 10px 14px; box-shadow: var(--shadow-chip) }
+  .eyebrow { margin: 0; color: var(--red); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: var(--fs-small) }
+  h1 { margin: 0; font: 400 clamp(2.4rem, 7vw, 4.2rem)/1.05 var(--display); color: var(--ink) }
+  .lead { margin: 0; color: var(--ink-soft); max-width: 34ch }
+  .date { margin: 0; font-weight: 700; color: var(--green) }
+  .count { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 4px 0 0; padding: 0; list-style: none }
+  .count li { min-width: 76px; padding: 12px 10px 8px; background: var(--white); border: 1px solid var(--line); border-radius: var(--r-md) }
+  .count b { display: block; font: 400 2rem/1 var(--display); color: var(--red) }
+  .count span { font-size: .78rem; color: var(--ink-soft) }
+  .contact { margin: 6px 0 0; padding-top: 18px; border-top: 1px solid var(--line); font-size: var(--fs-small); color: var(--ink-soft); width: 100% }
+  .contact a { color: var(--ink); font-weight: 600; text-decoration-color: var(--line-strong); overflow-wrap: anywhere }
+  @media (prefers-reduced-motion: no-preference) { main { animation: rise .6s ease-out both } }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px) } }
+</style>
+</head>
+<body>
+<main>
+  <img class="logo" src="/assets/images/brand/logo-sm.webp" width="320" height="201" alt="Oont Chap Spice Mama">
+  <p class="eyebrow">Our website is getting ready</p>
+  <h1>Opening this Diwali</h1>
+  <p class="lead">We are putting the finishing touches to the Spice Mama website. Please visit us again on Diwali.</p>
+  <p class="date">Sunday, 8 November 2026</p>
+  <ul class="count" id="count" aria-label="Time until launch" hidden>
+    <li><b data-unit="d">0</b><span>days</span></li>
+    <li><b data-unit="h">0</b><span>hours</span></li>
+    <li><b data-unit="m">0</b><span>minutes</span></li>
+  </ul>
+  <p class="contact">Until then, reach us at <a href="tel:+919441547648">+91 94415 47648</a> or <a href="mailto:andhrastandardproducts@gmail.com">andhrastandardproducts@gmail.com</a></p>
+</main>
+<script>
+  // Countdown to 00:00 IST on Sunday 8 November 2026 (= 2026-11-07 18:30 UTC). After that, reload into the live site.
+  (() => {
+    const launch = Date.UTC(2026, 10, 7, 18, 30);
+    const box = document.getElementById('count');
+    // Reload only when launch passes while the page is open; a page served after launch must not loop.
+    const openedBefore = Date.now() < launch;
+    const tick = () => {
+      const left = launch - Date.now();
+      if (left <= 0) { box.hidden = true; if (openedBefore) location.replace('/'); return; }
+      const parts = { d: Math.floor(left / 864e5), h: Math.floor(left / 36e5) % 24, m: Math.floor(left / 6e4) % 60 };
+      for (const [unit, value] of Object.entries(parts)) box.querySelector(`[data-unit="${unit}"]`).textContent = String(value);
+      box.hidden = false;
+    };
+    tick();
+    setInterval(tick, 30000);
+  })();
+</script>
+</body>
+</html>
