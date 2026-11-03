@@ -32,11 +32,40 @@
   .contact a { color: var(--ink); font-weight: 600; text-decoration-color: var(--line-strong); overflow-wrap: anywhere }
   @media (prefers-reduced-motion: no-preference) { main { animation: rise .6s ease-out both } }
   @keyframes rise { from { opacity: 0; transform: translateY(12px) } }
+
+  /* Pounding scene, cropped from the Guntur Gold pack art (see assets/images/SOURCES.md).
+     The same image is drawn twice: the man and mortar (left SPLIT of the width) squash from the
+     bottom on each strike, so the pestle and turban dip most and the mortar barely moves; the
+     woman (right part) stays still. Red dust puffs rise from the mortar on every strike. */
+  .scene { --split: 44%; --beat: 1.1s; position: relative; width: clamp(190px, 46vw, 250px); aspect-ratio: 3 / 4;
+           margin: 4px 0 2px; border-radius: var(--r-lg); overflow: hidden; background: #A81213; box-shadow: var(--shadow-chip) }
+  /* Drawn 6% taller than the frame (anchored at the bottom) so the squash never uncovers the frame's top edge. */
+  .scene img { position: absolute; left: 0; bottom: 0; width: 100%; height: 106%; object-fit: cover; object-position: 50% 100%; display: block }
+  .scene .still { clip-path: inset(0 0 0 var(--split)) }
+  .scene .pounding { clip-path: inset(0 calc(100% - var(--split)) 0 0); transform-origin: 50% 100% }
+  .scene .dust { position: absolute; left: 24%; top: 72%; width: 11px; height: 11px; margin: -5px; border-radius: 50%;
+                 background: #F2A33A; opacity: 0; pointer-events: none }
+  @media (prefers-reduced-motion: no-preference) {
+    .scene .pounding { animation: pound var(--beat) ease-in-out infinite }
+    .scene .dust { animation: puff var(--beat) ease-out infinite }
+    .scene .dust:nth-of-type(2) { --dx: -18px; animation-delay: .04s; background: #E8833A }
+    .scene .dust:nth-of-type(3) { --dx: 16px; animation-delay: .08s }
+    .scene .dust:nth-of-type(4) { --dx: -6px; animation-delay: .02s; background: #F6C66B; width: 7px; height: 7px }
+  }
+  /* Lift slowly, strike fast at ~52%, settle. */
+  @keyframes pound { 0%, 100% { transform: scaleY(1) } 42% { transform: scaleY(1.008) } 52% { transform: scaleY(.958) } 66% { transform: scaleY(1) } }
+  @keyframes puff { 0%, 50% { opacity: 0; transform: translate(0, 0) scale(.4) }
+                    56% { opacity: .9 } 90% { opacity: 0; transform: translate(var(--dx, 8px), -26px) scale(1.6) } 100% { opacity: 0 } }
 </style>
 </head>
 <body>
 <main>
   <img class="logo" src="/assets/images/brand/logo-sm.webp" width="320" height="201" alt="Oont Chap Spice Mama">
+  <div class="scene" role="img" aria-label="Illustration: a man pounding red chillies in a stone mortar while a woman sorts dried chillies">
+    <img class="still" src="/assets/images/campaign/pounding-scene.webp" width="360" height="480" alt="">
+    <img class="pounding" src="/assets/images/campaign/pounding-scene.webp" width="360" height="480" alt="">
+    <span class="dust"></span><span class="dust"></span><span class="dust"></span><span class="dust"></span>
+  </div>
   <p class="eyebrow">Our website is getting ready</p>
   <h1>Opening this Diwali</h1>
   <p class="lead">We are putting the finishing touches to the Spice Mama website. Please visit us again on Diwali.</p>
