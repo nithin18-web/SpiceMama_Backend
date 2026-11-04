@@ -29,3 +29,11 @@ RewriteRule ^api/v1(?:/.*)?$ api/index.php [L,QSA]
 <FilesMatch "(^\.|^error_log$|\.(?:sql|gz|dump|env|ini|log|md|yaml|lock|json)$)">
     Require all denied
 </FilesMatch>
+
+# Pages must be revalidated on every visit (no stale pre-launch or old pages from browser cache);
+# images, CSS and JS keep normal caching.
+<IfModule mod_headers.c>
+    <FilesMatch "\.html$">
+        Header set Cache-Control "no-cache"
+    </FilesMatch>
+</IfModule>
