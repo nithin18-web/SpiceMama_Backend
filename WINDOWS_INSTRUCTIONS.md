@@ -37,24 +37,30 @@ repo is the newest and complete copy** (that repo lacks the Diwali page and late
   - Let's Encrypt certificate (Webuzo Automatic SSL) valid to 1 Feb 2027, auto-renews.
   - Private files, `error_log` and fake uploads are blocked; API and photos verified.
 - Diwali pre-launch page built: `frontend/maintenance.html` with an animated chilli-pounding scene
-  (`frontend/assets/images/campaign/pounding-scene.webp`) and a fireworks show when the countdown ends. **Not uploaded yet** (see pending #1).
+  (`frontend/assets/images/campaign/pounding-scene.webp`) and a fireworks show when the countdown ends.
+
+### Done on 2026-11-04 (live)
+- New pack photos + hero text fix uploaded; the 11 products use the new photos (`deploy/pack-photo-update.php`).
+- **Diwali pre-launch page is live**: visitors see "Opening this Diwali" until 00:00 IST Sun 8 Nov 2026;
+  owner preview via the private `?preview=` link (kept out of Git); `http://` redirects to `https://`;
+  HTML pages are sent with `Cache-Control: no-cache` so nobody sees stale pages around launch.
+- **Live admin account exists** (created via phpMyAdmin) and login is confirmed.
+- Note: the host firewall briefly blocks an IP that sends many requests quickly (~5 min). Keep checks gentle.
 
 ### Pending — in this order
-1. **Before Diwali: put the pre-launch page live** (owner action in Webuzo, ~10 min). Right now the
-   full site is publicly visible and `http://` does not redirect to `https://`. See section 5.
-2. **Live admin account** — none exists on the server yet (section 4, "Admin account (live)").
-3. **Sunday 8 Nov 2026, 00:00 IST:** the pre-launch page should switch off by itself. Check
-   `https://spicemama.in` after midnight; if it still shows "Opening this Diwali", delete the
-   pre-launch block from `public_html/.htaccess` (section 5).
-4. **Merge** `feature/full-site-v1` into `main` (this repo, and decide whether
-   `SpiceMama_Frontend` is retired or kept in sync).
-5. **Content (owner):** remove/archive "Test1"; confirm the 4 placeholder categories (Chilli powders,
+1. **Sunday 8 Nov 2026, just after 00:00 IST:** open `https://spicemama.in` (private tab). It should show the
+   real site. If it still shows "Opening this Diwali", delete the DIWALI block (lines 12-23) from
+   `public_html/.htaccess` in Webuzo File Manager and save.
+2. **Merge** `feature/full-site-v1` into `main` here, and `feature/hero-and-diwali` into `main` in
+   `SpiceMama_Frontend` (or retire that repo — this one is the complete copy).
+3. **Content (owner):** remove/archive "Test1" in admin; confirm the 4 placeholder categories (Chilli powders,
    Spices, Masalas, Flours); WhatsApp number (`frontend/assets/js/config.js` → `business.whatsapp`);
    privacy policy and terms; founding story; real recipe photos. Do not publish claims such as
    "no preservatives" or "100% ethically sourced" unless the owner confirms them.
-6. **Optional:** better pounding animation needs the pack designer's layered artwork (separate pestle/arms).
-7. **Housekeeping:** log out of Webuzo after each session (its URLs contain a login session);
-   delete leftover files on the server (`spicemama-site.zip` if still in `/home/spicemam`).
+4. **Optional:** admin "change password" screen (today passwords are changed via a hash in phpMyAdmin);
+   better pounding animation needs the pack designer's layered artwork.
+5. **Housekeeping:** log out of Webuzo after each session (its URLs contain a login session); delete the 11 old
+   product photo files listed at the end of the pack-photo SQL from `public_html/uploads/products/`.
 
 ## 3. Set up this laptop (Windows)
 
@@ -156,7 +162,7 @@ No SSH, so create it with phpMyAdmin:
    ```
 3. Log in at `https://spicemama.in/admin/` (works only over https). Test on "Test1", not real products.
 
-## 5. Diwali pre-launch page (pending #1)
+## 5. Diwali pre-launch page (live since 2026-11-04)
 
 Goal: visitors see "Opening this Diwali" with a countdown until **00:00 IST Sunday 8 Nov 2026**
 (= `20261107183000` UTC, the server clock); admin, API, images keep working; the owner can preview the
