@@ -37,7 +37,7 @@ repo is the newest and complete copy** (that repo lacks the Diwali page and late
   - Let's Encrypt certificate (Webuzo Automatic SSL) valid to 1 Feb 2027, auto-renews.
   - Private files, `error_log` and fake uploads are blocked; API and photos verified.
 - Diwali pre-launch page built: `frontend/maintenance.html` with an animated chilli-pounding scene
-  (`frontend/assets/images/campaign/pounding-scene.webp`). **Not uploaded yet** (see pending #1).
+  (`frontend/assets/images/campaign/pounding-scene.webp`) and a fireworks show when the countdown ends. **Not uploaded yet** (see pending #1).
 
 ### Pending — in this order
 1. **Before Diwali: put the pre-launch page live** (owner action in Webuzo, ~10 min). Right now the
@@ -173,6 +173,10 @@ Owner steps in Webuzo File Manager — **in this order**:
    - then in Webuzo: `public_html/.htaccess` → Edit file → replace everything → Save.
 4. Check (or ask Claude to check): `https://spicemama.in` shows the Diwali page; `http://` redirects to
    `https://`; `https://spicemama.in/?preview=<your code>` shows the real site in that browser for 7 days.
+
+When the countdown reaches zero while someone has the page open, a ~10-second Diwali fireworks show
+plays (rockets, bursts, anar fountains, "Happy Diwali!" with an "Enter the website" button), then the
+site opens. Preview the show any time with `/maintenance.html?celebrate` (it stays on the page).
 
 Notes: the template already enables the HTTPS redirect. If LiteSpeed ignores the time condition the
 page simply stays up (it never opens early) — then delete the pre-launch block on Sunday.

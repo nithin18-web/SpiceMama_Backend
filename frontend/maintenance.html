@@ -15,6 +15,7 @@
 <style>
   /* Pre-launch page shown by public_html/.htaccess until the Diwali launch. Self-contained apart from tokens. */
   * { box-sizing: border-box }
+  [hidden] { display: none !important }
   body { margin: 0; min-height: 100dvh; display: grid; place-items: center; padding: var(--pad);
          background: var(--ivory); color: var(--ink); font: 400 var(--fs-body)/1.6 var(--body) }
   body > main { min-width: 0 }
@@ -56,6 +57,23 @@
     .scene .dust:nth-of-type(3) { --dx: 16px; animation-delay: .08s }
     .scene .dust:nth-of-type(4) { --dx: -6px; animation-delay: .02s; background: #F6C66B; width: 7px; height: 7px }
   }
+  /* Diwali fireworks when the countdown ends (or with ?celebrate): full-screen canvas over a night sky. */
+  .sky { position: fixed; inset: 0; z-index: 10; pointer-events: none; opacity: 0; transition: opacity .8s ease;
+         background: radial-gradient(120% 90% at 50% 100%, #2B1236 0%, #170A22 55%, #0B0612 100%) }
+  .sky.on { opacity: 1 }
+  .sky canvas { position: absolute; inset: 0; width: 100%; height: 100% }
+  .hello { position: fixed; inset: 0; z-index: 11; display: grid; place-content: center; gap: 18px; padding: var(--pad);
+           text-align: center; color: #FFF6E0; pointer-events: none; opacity: 0; transform: scale(.94);
+           transition: opacity 1s ease 1.2s, transform 1s ease 1.2s }
+  .hello.on { opacity: 1; transform: none; pointer-events: auto }
+  .hello h2 { margin: 0; font: 400 clamp(2.6rem, 9vw, 5.4rem)/1.05 var(--display); color: #FFD27A;
+              text-shadow: 0 2px 18px rgba(11, 6, 18, .9), 0 0 24px rgba(255, 170, 60, .55), 0 0 2px #FFE7B0 }
+  .hello::before { content: ''; position: absolute; inset: 22% 8%; z-index: -1; pointer-events: none;
+                   background: radial-gradient(closest-side, rgba(11, 6, 18, .72), rgba(11, 6, 18, 0)) }
+  .hello p { margin: 0; font-size: 1.1rem; color: #F7E6C8; text-shadow: 0 1px 8px rgba(11, 6, 18, .9) }
+  .hello a { justify-self: center; margin-top: 6px; padding: 14px 26px; border-radius: var(--r-pill); background: var(--red);
+             color: var(--white); font-weight: 700; text-decoration: none; box-shadow: 0 8px 30px rgba(200, 20, 28, .5) }
+  .hello a:focus-visible { outline: 3px solid #FFD27A; outline-offset: 3px }
   /* Lift slowly, strike fast at ~52%, settle. */
   @keyframes pound { 0%, 100% { transform: scaleY(1) } 42% { transform: scaleY(1.008) } 52% { transform: scaleY(.958) } 66% { transform: scaleY(1) } }
   @keyframes puff { 0%, 50% { opacity: 0; transform: translate(0, 0) scale(.4) }
@@ -83,8 +101,15 @@
   </ul>
   <p class="contact">Until then, reach us at <a href="tel:+919441547648">+91 94415 47648</a> or <a href="mailto:andhrastandardproducts@gmail.com">andhrastandardproducts@gmail.com</a></p>
 </main>
+<div class="sky" id="sky" aria-hidden="true"><canvas id="fireworks"></canvas></div>
+<section class="hello" id="hello" aria-live="polite" hidden>
+  <h2>Happy Diwali!</h2>
+  <p>The Spice Mama website is now open.</p>
+  <a href="/" id="enter">Enter the website</a>
+</section>
 <script>
-  // Countdown to 00:00 IST on Sunday 8 November 2026 (= 2026-11-07 18:30 UTC). After that, reload into the live site.
+  // Countdown to 00:00 IST on Sunday 8 November 2026 (= 2026-11-07 18:30 UTC).
+  // When it ends while the page is open: fireworks, then the live site. ?celebrate previews the show.
   (() => {
     const launch = Date.UTC(2026, 10, 7, 18, 30);
     const box = document.getElementById('count');
@@ -92,14 +117,134 @@
     const openedBefore = Date.now() < launch;
     const tick = () => {
       const left = launch - Date.now();
-      if (left <= 0) { box.hidden = true; if (openedBefore) location.replace('/'); return; }
+      if (left <= 0) { box.hidden = true; if (openedBefore) celebrate(); return; }
       const parts = { d: Math.floor(left / 864e5), h: Math.floor(left / 36e5) % 24, m: Math.floor(left / 6e4) % 60 };
       for (const [unit, value] of Object.entries(parts)) box.querySelector(`[data-unit="${unit}"]`).textContent = String(value);
       box.hidden = false;
     };
+    let celebrating = false;
+    function celebrate() {
+      if (celebrating) return;
+      celebrating = true;
+      clearInterval(timer);
+      const hello = document.getElementById('hello');
+      hello.hidden = false;
+      requestAnimationFrame(() => hello.classList.add('on'));
+      document.getElementById('enter').focus({ preventScroll: true });
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.getElementById('sky').classList.add('on');
+      } else {
+        fireworks(document.getElementById('sky'), 9500);
+      }
+      // A page served after launch never gets here, so this cannot loop back into itself.
+      if (!preview) setTimeout(() => location.replace('/'), 11000);
+    }
+    const preview = new URLSearchParams(location.search).has('celebrate');
+    const timer = setInterval(tick, 30000);
     tick();
-    setInterval(tick, 30000);
+    if (preview) setTimeout(celebrate, 600);
   })();
+
+  // Lightweight canvas fireworks: rockets rise and burst into sparks with gravity, drag, twinkle and a
+  // crackle of glitter; anar (flower-pot) fountains spray from the ground; launches speed up towards a
+  // finale. Stops itself after `duration` ms.
+  function fireworks(sky, duration) {
+    const canvas = sky.querySelector('canvas');
+    const ctx = canvas.getContext('2d');
+    const colours = ['#FFD27A', '#FFB347', '#FF7A3D', '#FF4D4D', '#FF6FB5', '#B98CFF', '#6EE7A8', '#FFFFFF', '#FFE066'];
+    const pick = (list) => list[Math.floor(Math.random() * list.length)];
+    let w = 0, h = 0, dpr = 1;
+    const fit = () => {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = canvas.clientWidth; h = canvas.clientHeight;
+      canvas.width = w * dpr; canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    fit();
+    addEventListener('resize', fit);
+    sky.classList.add('on');
+
+    const rockets = [], sparks = [];
+    const MAX_SPARKS = 3200;
+    // Anar fountains along the ground, kept away from the centre where the message sits.
+    const fountains = [0.07, 0.24, 0.76, 0.93];
+    const spray = (fx, intensity) => {
+      for (let i = 0; i < intensity && sparks.length < MAX_SPARKS; i++) {
+        const angle = -Math.PI / 2 + (Math.random() - 0.5) * 0.55;
+        const speed = h / 120 + Math.random() * (h / 150);
+        sparks.push({ x: w * fx + (Math.random() - 0.5) * 6, y: h - 4, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+                      life: 0.8, decay: 0.016 + Math.random() * 0.012, colour: Math.random() < 0.7 ? '#FFD27A' : '#FFFFFF',
+                      size: 1.2 + Math.random(), crackle: Math.random() < 0.12 });
+      }
+    };
+    const launch = () => {
+      const x = w * (0.12 + Math.random() * 0.76);
+      rockets.push({ x, y: h + 10, vx: (Math.random() - 0.5) * 1.6, vy: -(h / 95 + Math.random() * (h / 160)),
+                     colour: pick(colours), trail: [] });
+    };
+    const burst = (x, y, colour) => {
+      const kind = Math.random();
+      const count = kind < 0.25 ? 140 : 90;
+      const second = Math.random() < 0.45 ? pick(colours) : colour;
+      for (let i = 0; i < count && sparks.length < MAX_SPARKS; i++) {
+        const angle = (Math.PI * 2 * i) / count + Math.random() * 0.08;
+        const speed = kind < 0.25 ? 3.2 + Math.random() * 1.2            // big round peony
+                    : kind < 0.55 ? 1.5 + Math.random() * 3.6           // scattered chrysanthemum
+                    : (i % 2 ? 4 : 2.2) + Math.random() * 0.6;          // two-ring burst
+        sparks.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+                      life: 1, decay: 0.008 + Math.random() * 0.01, colour: i % 3 ? colour : second,
+                      size: 1.9 + Math.random() * 1.6, crackle: Math.random() < 0.18 });
+      }
+    };
+    const start = performance.now();
+    let nextLaunch = 0, last = start;
+    const frame = (now) => {
+      const elapsed = now - start;
+      const step = Math.min((now - last) / 16.7, 3);
+      last = now;
+      // Launch pace builds from ~5 to ~14 rockets a second, with a finale volley at the end.
+      if (elapsed < duration && now >= nextLaunch) {
+        const volley = elapsed > duration - 1800 ? 4 : 1 + (Math.random() < 0.35 + elapsed / duration ? 1 : 0);
+        for (let i = 0; i < volley; i++) launch();
+        nextLaunch = now + Math.max(90, 260 - (elapsed / duration) * 170) * (0.6 + Math.random() * 0.8);
+      }
+      if (elapsed < duration) for (const fx of fountains) spray(fx, Math.round(3 * step));
+      // Fade previous frame for light trails.
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fillRect(0, 0, w, h);
+      ctx.globalCompositeOperation = 'lighter';
+
+      for (let i = rockets.length - 1; i >= 0; i--) {
+        const r = rockets[i];
+        r.x += r.vx * step; r.y += r.vy * step; r.vy += 0.09 * step;
+        ctx.fillStyle = '#FFE7B0';
+        ctx.beginPath(); ctx.arc(r.x, r.y, 2.2, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = 'rgba(255, 180, 90, .5)';
+        ctx.beginPath(); ctx.arc(r.x - r.vx, r.y - r.vy * 1.6, 1.4, 0, Math.PI * 2); ctx.fill();
+        if (r.vy >= -1.2 || r.y < h * 0.12) { burst(r.x, r.y, r.colour); rockets.splice(i, 1); }
+      }
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const p = sparks[i];
+        p.vx *= 0.985; p.vy = p.vy * 0.985 + 0.045 * step;
+        p.x += p.vx * step; p.y += p.vy * step;
+        p.life -= p.decay * step;
+        if (p.life <= 0) { sparks.splice(i, 1); continue; }
+        const twinkle = p.crackle && p.life < 0.5 ? (Math.random() < 0.5 ? 0 : 1.6) : 1;
+        ctx.globalAlpha = Math.max(0, p.life) * twinkle;
+        ctx.fillStyle = p.colour;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size * (0.6 + p.life * 0.4), 0, Math.PI * 2); ctx.fill();
+        // Glitter: crackling sparks shed tiny white flecks as they die.
+        if (p.crackle && p.life < 0.45 && Math.random() < 0.3 && sparks.length < MAX_SPARKS) {
+          sparks.push({ x: p.x, y: p.y, vx: (Math.random() - 0.5) * 1.2, vy: (Math.random() - 0.5) * 1.2,
+                        life: 0.5, decay: 0.05, colour: '#FFFFFF', size: 0.9, crackle: false });
+        }
+      }
+      ctx.globalAlpha = 1;
+      if (elapsed < duration + 2500 || rockets.length || sparks.length) requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  }
 </script>
 </body>
 </html>
