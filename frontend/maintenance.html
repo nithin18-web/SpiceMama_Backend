@@ -19,8 +19,10 @@
   body { margin: 0; min-height: 100dvh; display: grid; place-items: center; padding: var(--pad);
          background: var(--ivory); color: var(--ink); font: 400 var(--fs-body)/1.6 var(--body) }
   body > main { min-width: 0 }
+  /* Room for the floating Launch bar so the last line can scroll clear of it (no bar with ?celebrate). */
+  body:has(#launch-panel:not([hidden])) { padding-bottom: 170px }
   main { width: min(640px, 100%); text-align: center; display: grid; gap: 22px; justify-items: center }
-  .logo { width: 180px; height: auto; background: var(--white); border-radius: var(--r-lg); padding: 10px 14px; box-shadow: var(--shadow-chip) }
+  .logo { width: clamp(230px, 19vw, 280px); height: auto; background: var(--white); border-radius: var(--r-lg); padding: 10px 14px; box-shadow: var(--shadow-chip) }
   .eyebrow { margin: 0; color: var(--red); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: var(--fs-small) }
   h1 { margin: 0; font: 400 clamp(2.4rem, 7vw, 4.2rem)/1.05 var(--display); color: var(--ink) }
   .lead { margin: 0; color: var(--ink-soft); max-width: 34ch }
@@ -42,6 +44,12 @@
   .launch button[disabled] { opacity: .7; cursor: progress }
   .launch p { margin: 0; font-size: var(--fs-small); color: var(--ink-soft) }
   .launch .error { color: var(--bad); font-weight: 600 }
+  /* Wide screens: the box sits in the bottom-right corner, beside the centred column instead of over it. */
+  @media (min-width: 1100px) {
+    .launch { left: auto; right: 24px; bottom: 24px; transform: none; width: 310px; padding: 14px 16px; text-align: center }
+    .launch button { white-space: nowrap }
+    body:has(#launch-panel:not([hidden])) { padding-bottom: var(--pad) }
+  }
   /* Diwali fireworks after Launch is pressed (or with ?celebrate): full-screen canvas over a night sky. */
   .sky { position: fixed; inset: 0; z-index: 10; pointer-events: none; opacity: 0; transition: opacity .8s ease;
          background: radial-gradient(120% 90% at 50% 100%, #2B1236 0%, #170A22 55%, #0B0612 100%) }
@@ -63,7 +71,7 @@
 </head>
 <body>
 <main>
-  <img class="logo" src="/assets/images/brand/logo-sm.webp?v=20261107b" width="320" height="201" alt="Oont Chap Spice Mama">
+  <img class="logo" src="/assets/images/brand/logo.webp?v=20261107b" width="700" height="439" alt="Oont Chap Spice Mama">
   <img class="art" src="/assets/images/art/pappad.webp?v=20261107b" width="900" height="511" alt="Illustration: the Spice Mama family sharing a meal together">
   <p class="eyebrow">Our website is getting ready</p>
   <h1>Opening this Diwali</h1>
