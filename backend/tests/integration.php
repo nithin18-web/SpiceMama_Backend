@@ -77,6 +77,8 @@ $session = new ArraySession();
 $config['upload_path'] = $uploads;
 $config['storage_path'] = $root . '/storage';
 $config['throttle_key'] = str_repeat('k', 64);
+$config['launch_flag'] = $root . '/public/.launched';
+mkdir($root . '/public', 0755, true);
 $kernel = new Kernel(fn(): PDO => $db, $session, $clock, $config);
 $password = 'correct horse battery staple';
 $adminId = (new AdminRepository($db, $clock))->create('owner@example.test', 'MOCK Owner', $password);
@@ -313,6 +315,18 @@ status($login('owner@example.test', $password), 200, 'reactivated');
 status(write('POST', '/admin/logout'), 204, 'logout');
 status(call('GET', '/admin/me'), 401, 'logged out');
 status(call('POST', '/admin/logout', null, ['x-csrf-token' => token()]), 401, 'logout requires session');
+
+// --- Site launch ------------------------------------------------------------
+status(call('POST', '/admin/launch', null, ['x-csrf-token' => token()]), 401, 'launch requires admin session');
+status($login('owner@example.test', $password), 200, 'login for launch');
+status(call('POST', '/admin/launch'), 403, 'launch requires CSRF');
+check(!is_file($root . '/public/.launched'), 'no marker before launch');
+$first = status(write('POST', '/admin/launch'), 200, 'launch')['data'];
+check($first['launched'] === true && is_file($root . '/public/.launched'), 'launch creates marker');
+$now = $now->modify('+5 minutes');
+check(status(write('POST', '/admin/launch'), 200, 'launch again')['data']['launched_at'] === $first['launched_at'], 'second launch keeps original time');
+check((int) $db->query("SELECT COUNT(*) FROM admin_audit_logs WHERE action='site.launched'")->fetchColumn() === 1, 'launch audited once');
+status(write('POST', '/admin/logout'), 204, 'logout after launch');
 
 // --- Throttling -------------------------------------------------------------
 for ($i = 0; $i < 5; ++$i) {

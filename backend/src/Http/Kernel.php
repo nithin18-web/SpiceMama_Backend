@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace SpiceMama\Http;
 use PDO;
-use SpiceMama\Controllers\{AdminAuthController, AdminCategoryController, AdminImageController, AdminProductController, CatalogueController};
+use SpiceMama\Controllers\{AdminAuthController, AdminCategoryController, AdminImageController, AdminProductController, AdminSiteController, CatalogueController};
 use SpiceMama\Middleware\AdminGuard;
 use SpiceMama\Repositories\PdoCatalogueRepository;
 use SpiceMama\Services\{ImageStore, LoginThrottle, SessionStore};
@@ -47,12 +47,14 @@ final class Kernel
             (string) ($this->config['upload_path'] ?? ''),
             self::storage($this->config, 'upload-staging'),
         ));
+        $site = new AdminSiteController($guard, $db, $this->clock, $this->config);
         $id = '([^/]+)';
         $routes = [
             ['GET', '/csrf', $auth->csrf(...)],
             ['POST', '/login', $auth->login(...)],
             ['GET', '/me', $auth->me(...)],
             ['POST', '/logout', $auth->logout(...)],
+            ['POST', '/launch', $site->launch(...)],
             ['GET', '/products', $products->list(...)],
             ['POST', '/products', $products->create(...)],
             ['GET', "/products/$id", $products->show(...)],

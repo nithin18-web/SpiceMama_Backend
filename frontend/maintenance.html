@@ -25,39 +25,24 @@
   h1 { margin: 0; font: 400 clamp(2.4rem, 7vw, 4.2rem)/1.05 var(--display); color: var(--ink) }
   .lead { margin: 0; color: var(--ink-soft); max-width: 34ch }
   .date { margin: 0; font-weight: 700; color: var(--green) }
-  .count { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 4px 0 0; padding: 0; list-style: none }
-  .count li { min-width: 76px; padding: 12px 10px 8px; background: var(--white); border: 1px solid var(--line); border-radius: var(--r-md) }
-  .count b { display: block; font: 400 2rem/1 var(--display); color: var(--red) }
-  .count span { font-size: .78rem; color: var(--ink-soft) }
   .contact { margin: 6px 0 0; padding-top: 18px; border-top: 1px solid var(--line); font-size: var(--fs-small); color: var(--ink-soft); width: 100% }
   .contact a { color: var(--ink); font-weight: 600; text-decoration-color: var(--line-strong); overflow-wrap: anywhere }
   @media (prefers-reduced-motion: no-preference) { main { animation: rise .6s ease-out both } }
   @keyframes rise { from { opacity: 0; transform: translateY(12px) } }
 
-  /* Pounding scene, cropped from the Guntur Gold pack art (see assets/images/SOURCES.md).
-     A wide red stage gives the people room; the art sits centred with its side edges faded into it.
-     The art is drawn twice: the man and mortar (left SPLIT of its width) squash from the bottom on
-     each strike, so pestle and turban dip most and the mortar barely moves; the woman stays still.
-     The art is 6% taller than the stage (anchored at the bottom) so the squash never uncovers its top. */
-  .scene { --split: 40%; --beat: 1.1s; position: relative; width: clamp(260px, 82vw, 400px); aspect-ratio: 1 / 1;
-           margin: 4px 0 2px; border-radius: var(--r-xl); overflow: hidden; box-shadow: var(--shadow-chip);
-           background: radial-gradient(75% 75% at 50% 62%, #C5151B 0%, #B51419 50%, #96101A 100%) }
-  .scene .art { position: absolute; left: 50%; bottom: 0; height: 106%; aspect-ratio: 327 / 545; transform: translateX(-50%);
-                -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 4%, #000 76%, transparent 100%);
-                mask-image: linear-gradient(90deg, transparent 0, #000 4%, #000 76%, transparent 100%) }
-  .scene img { position: absolute; inset: 0; width: 100%; height: 100%; display: block }
-  .scene .still { clip-path: inset(0 0 0 var(--split)) }
-  .scene .pounding { clip-path: inset(0 calc(100% - var(--split)) 0 0); transform-origin: 50% 100% }
-  .scene .dust { position: absolute; left: 18%; top: 68%; width: 11px; height: 11px; margin: -5px; border-radius: 50%;
-                 background: #F2A33A; opacity: 0; pointer-events: none }
-  @media (prefers-reduced-motion: no-preference) {
-    .scene .pounding { animation: pound var(--beat) ease-in-out infinite }
-    .scene .dust { animation: puff var(--beat) ease-out infinite }
-    .scene .dust:nth-of-type(2) { --dx: -18px; animation-delay: .04s; background: #E8833A }
-    .scene .dust:nth-of-type(3) { --dx: 16px; animation-delay: .08s }
-    .scene .dust:nth-of-type(4) { --dx: -6px; animation-delay: .02s; background: #F6C66B; width: 7px; height: 7px }
-  }
-  /* Diwali fireworks when the countdown ends (or with ?celebrate): full-screen canvas over a night sky. */
+  /* Family artwork on the page background (see assets/images/SOURCES.md). */
+  .art { width: auto; max-width: min(100%, 560px); height: auto; max-height: 36vh; margin: 2px 0 0 }
+  /* Admin-only launch panel: shown when /api/v1/admin/me says an admin is signed in. It floats at the bottom of
+     the screen so the button is always in view at the event, whatever the screen size. */
+  .launch { position: fixed; z-index: 5; left: 50%; bottom: max(16px, env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: max-content; max-width: calc(100vw - 32px);
+            display: grid; gap: 8px; justify-items: center; padding: 16px 22px; border: 1.5px dashed var(--red); border-radius: var(--r-lg); background: var(--white); box-shadow: 0 18px 50px rgba(43, 21, 16, .22) }
+  .launch button { font: 700 1.15rem/1 var(--body); padding: 18px 34px 15px; border: 0; border-radius: var(--r-pill); background: var(--red); color: var(--white); cursor: pointer; box-shadow: 0 10px 30px rgba(200, 20, 28, .35) }
+  .launch button:hover { background: var(--red-deep) }
+  .launch button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px }
+  .launch button[disabled] { opacity: .7; cursor: progress }
+  .launch p { margin: 0; font-size: var(--fs-small); color: var(--ink-soft) }
+  .launch .error { color: var(--bad); font-weight: 600 }
+  /* Diwali fireworks after an admin presses Launch (or with ?celebrate): full-screen canvas over a night sky. */
   .sky { position: fixed; inset: 0; z-index: 10; pointer-events: none; opacity: 0; transition: opacity .8s ease;
          background: radial-gradient(120% 90% at 50% 100%, #2B1236 0%, #170A22 55%, #0B0612 100%) }
   .sky.on { opacity: 1 }
@@ -74,33 +59,23 @@
   .hello a { justify-self: center; margin-top: 6px; padding: 14px 26px; border-radius: var(--r-pill); background: var(--red);
              color: var(--white); font-weight: 700; text-decoration: none; box-shadow: 0 8px 30px rgba(200, 20, 28, .5) }
   .hello a:focus-visible { outline: 3px solid #FFD27A; outline-offset: 3px }
-  /* Lift slowly, strike fast at ~52%, settle. */
-  @keyframes pound { 0%, 100% { transform: scaleY(1) } 42% { transform: scaleY(1.008) } 52% { transform: scaleY(.958) } 66% { transform: scaleY(1) } }
-  @keyframes puff { 0%, 50% { opacity: 0; transform: translate(0, 0) scale(.4) }
-                    56% { opacity: .9 } 90% { opacity: 0; transform: translate(var(--dx, 8px), -26px) scale(1.6) } 100% { opacity: 0 } }
 </style>
 </head>
 <body>
 <main>
   <img class="logo" src="/assets/images/brand/logo-sm.webp" width="320" height="201" alt="Oont Chap Spice Mama">
-  <div class="scene" role="img" aria-label="Illustration: a man pounding red chillies in a stone mortar while a woman sorts dried chillies">
-    <div class="art">
-      <img class="still" src="/assets/images/campaign/pounding-scene.webp" width="327" height="545" alt="">
-      <img class="pounding" src="/assets/images/campaign/pounding-scene.webp" width="327" height="545" alt="">
-      <span class="dust"></span><span class="dust"></span><span class="dust"></span><span class="dust"></span>
-    </div>
-  </div>
+  <img class="art" src="/assets/images/art/pappad.webp" width="900" height="511" alt="Illustration: the Spice Mama family sharing a meal together">
   <p class="eyebrow">Our website is getting ready</p>
   <h1>Opening this Diwali</h1>
   <p class="lead">We are putting the finishing touches to the Spice Mama website. Please visit us again on Diwali.</p>
   <p class="date">Sunday, 8 November 2026</p>
-  <ul class="count" id="count" aria-label="Time until launch" hidden>
-    <li><b data-unit="d">0</b><span>days</span></li>
-    <li><b data-unit="h">0</b><span>hours</span></li>
-    <li><b data-unit="m">0</b><span>minutes</span></li>
-  </ul>
   <p class="contact">Until then, reach us at <a href="tel:+919441547648">+91 94415 47648</a> or <a href="mailto:andhrastandardproducts@gmail.com">andhrastandardproducts@gmail.com</a></p>
 </main>
+  <div class="launch" id="launch-panel" hidden>
+    <button type="button" id="launch">🚀 Launch the website</button>
+    <p>You are signed in as an admin. This opens the website for everyone.</p>
+    <p class="error" id="launch-error" role="alert" hidden></p>
+  </div>
 <div class="sky" id="sky" aria-hidden="true"><canvas id="fireworks"></canvas></div>
 <section class="hello" id="hello" aria-live="polite" hidden>
   <h2>Happy Diwali!</h2>
@@ -108,25 +83,17 @@
   <a href="/" id="enter">Enter the website</a>
 </section>
 <script>
-  // Countdown to 00:00 IST on Sunday 8 November 2026 (= 2026-11-07 18:30 UTC).
-  // When it ends while the page is open: fireworks, then the live site. ?celebrate previews the show.
+  // Pre-launch page. Visitors only see the message. A signed-in admin sees a Launch button: it asks the API
+  // to launch the site (creates the marker the web server checks), plays 4 seconds of fireworks, then opens
+  // the home page, which from that moment is served to everyone. ?celebrate previews the show without launching.
   (() => {
-    const launch = Date.UTC(2026, 10, 7, 18, 30);
-    const box = document.getElementById('count');
-    // Reload only when launch passes while the page is open; a page served after launch must not loop.
-    const openedBefore = Date.now() < launch;
-    const tick = () => {
-      const left = launch - Date.now();
-      if (left <= 0) { box.hidden = true; if (openedBefore) celebrate(); return; }
-      const parts = { d: Math.floor(left / 864e5), h: Math.floor(left / 36e5) % 24, m: Math.floor(left / 6e4) % 60 };
-      for (const [unit, value] of Object.entries(parts)) box.querySelector(`[data-unit="${unit}"]`).textContent = String(value);
-      box.hidden = false;
-    };
-    let celebrating = false;
-    function celebrate() {
-      if (celebrating) return;
-      celebrating = true;
-      clearInterval(timer);
+    const SHOW_MS = 4000;
+    const panel = document.getElementById('launch-panel');
+    const button = document.getElementById('launch');
+    const error = document.getElementById('launch-error');
+    const api = (path, options = {}) => fetch('/api/v1' + path, { credentials: 'same-origin', cache: 'no-store', ...options, headers: { Accept: 'application/json', ...(options.headers || {}) } });
+
+    function celebrate(thenOpenSite) {
       const hello = document.getElementById('hello');
       hello.hidden = false;
       requestAnimationFrame(() => hello.classList.add('on'));
@@ -134,15 +101,41 @@
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
         document.getElementById('sky').classList.add('on');
       } else {
-        fireworks(document.getElementById('sky'), 9500);
+        fireworks(document.getElementById('sky'), SHOW_MS);
       }
-      // A page served after launch never gets here, so this cannot loop back into itself.
-      if (!preview) setTimeout(() => location.replace('/'), 11000);
+      if (thenOpenSite) setTimeout(() => location.replace('/'), SHOW_MS + 200);
     }
-    const preview = new URLSearchParams(location.search).has('celebrate');
-    const timer = setInterval(tick, 30000);
-    tick();
-    if (preview) setTimeout(celebrate, 600);
+
+    function fail(message) {
+      error.textContent = message;
+      error.hidden = false;
+      button.disabled = false;
+      button.textContent = '🚀 Launch the website';
+    }
+
+    button.addEventListener('click', async () => {
+      button.disabled = true;
+      button.textContent = 'Launching…';
+      error.hidden = true;
+      try {
+        const csrf = await api('/admin/csrf');
+        const token = (await csrf.json())?.data?.csrf_token;
+        const res = await api('/admin/launch', { method: 'POST', headers: { 'X-CSRF-Token': token || '' } });
+        if (res.ok) { panel.hidden = true; celebrate(true); return; }
+        if (res.status === 401) return fail('Your admin sign-in has ended. Sign in again at /admin/, then come back and press Launch.');
+        if (res.status === 403) return fail('The page was open too long. Reload it and press Launch again.');
+        fail('The website could not be launched just now. Please try again.');
+      } catch {
+        fail('No connection to the server. Check the internet and try again.');
+      }
+    });
+
+    if (new URLSearchParams(location.search).has('celebrate')) {
+      setTimeout(() => celebrate(false), 600);
+    } else {
+      // Only signed-in admins get the button; for everyone else this request just returns 401.
+      api('/admin/me').then((res) => { if (res.ok) panel.hidden = false; }).catch(() => {});
+    }
   })();
 
   // Lightweight canvas fireworks: rockets rise and burst into sparks with gravity, drag, twinkle and a
