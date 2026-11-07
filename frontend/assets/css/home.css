@@ -186,8 +186,9 @@ html:not(.motion) .progress { display: none }
 @media (max-width: 899px) {
   .kitchen-head, .recipe, .pickle, .partners, .marks { grid-template-columns: 1fr }
   .labels { grid-template-columns: 1fr }
-  .marks dl { grid-template-columns: 1fr; gap: 2px }
-  .marks dd { margin-bottom: 12px }
+  .marks dl { grid-template-columns: 1fr; gap: 4px; justify-items: center; text-align: center; max-width: 34em }
+  .marks dt { text-align: center }
+  .marks dd { margin-bottom: 18px }
 }
 
 /* ---------- phone motion: same story, portrait choreography ---------- */
