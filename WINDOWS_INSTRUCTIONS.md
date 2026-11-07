@@ -15,7 +15,7 @@ No cart or prices in phase 1. Plain HTML/CSS/JavaScript frontend + PHP 8.4 API +
 
 | Folder | What |
 |---|---|
-| `frontend/` | Public pages, admin screens (`frontend/admin/`), assets, `maintenance.html` (Diwali pre-launch page), `mock/` (browser-only sample data, never deployed) |
+| `frontend/` | Public pages, admin screens (`frontend/admin/`), assets, `maintenance.html` (pre-launch page with admin Launch button), `mock/` (browser-only sample data, never deployed) |
 | `backend/` | PHP API (`src/`), CLI tools (`bin/`), migrations, tests, config templates |
 | `deploy/` | Release builder, phpMyAdmin exporter, `.htaccess` templates, `RELEASE_GUIDE.md` |
 | `tools/` | Headless-Chrome end-to-end test, nav/footer copier |
@@ -36,8 +36,6 @@ repo is the newest and complete copy** (that repo lacks the Diwali page and late
   - `https://spicemama.in` serves the full site with 12 products (4 categories, includes test product "Test1").
   - Let's Encrypt certificate (Webuzo Automatic SSL) valid to 1 Feb 2027, auto-renews.
   - Private files, `error_log` and fake uploads are blocked; API and photos verified.
-- Diwali pre-launch page built: `frontend/maintenance.html` with an animated chilli-pounding scene
-  (`frontend/assets/images/campaign/pounding-scene.webp`) and a fireworks show when the countdown ends.
 
 ### Done on 2026-11-04 (live)
 - New pack photos + hero text fix uploaded; the 11 products use the new photos (`deploy/pack-photo-update.php`).
@@ -47,10 +45,15 @@ repo is the newest and complete copy** (that repo lacks the Diwali page and late
 - **Live admin account exists** (created via phpMyAdmin) and login is confirmed.
 - Note: the host firewall briefly blocks an IP that sends many requests quickly (~5 min). Keep checks gentle.
 
+### Built on 2026-11-07 (upload package `dist/live-update-2026-11-07/`, Mac only)
+- New pack mockups, family artwork, recipe squares, Three Mango Mirchi Powder (first product).
+- **Launch button replaces the countdown**: the pre-launch page shows artwork; a signed-in admin sees
+  "Launch the website" → `POST /api/v1/admin/launch` creates `public_html/.launched` → fireworks 4 s → home page.
+  `.htaccess` now checks that file instead of a time. See section 5.
+- Must be uploaded **before 00:00 IST Sun 8 Nov 2026**, otherwise the old timer rule opens the site by itself.
+
 ### Pending — in this order
-1. **Sunday 8 Nov 2026, just after 00:00 IST:** open `https://spicemama.in` (private tab). It should show the
-   real site. If it still shows "Opening this Diwali", delete the DIWALI block (lines 12-23) from
-   `public_html/.htaccess` in Webuzo File Manager and save.
+1. **Launch event (8 Nov 2026):** follow section 5 "Launch day". Archive "Test1" before launching.
 2. **Merge** `feature/full-site-v1` into `main` here, and `feature/hero-and-diwali` into `main` in
    `SpiceMama_Frontend` (or retire that repo — this one is the complete copy).
 3. **Content (owner):** remove/archive "Test1" in admin; confirm the 4 placeholder categories (Chilli powders,
@@ -162,32 +165,23 @@ No SSH, so create it with phpMyAdmin:
    ```
 3. Log in at `https://spicemama.in/admin/` (works only over https). Test on "Test1", not real products.
 
-## 5. Diwali pre-launch page (live since 2026-11-04)
+## 5. Pre-launch page and Launch button
 
-Goal: visitors see "Opening this Diwali" with a countdown until **00:00 IST Sunday 8 Nov 2026**
-(= `20261107183000` UTC, the server clock); admin, API, images keep working; the owner can preview the
-real site with a private link.
+Visitors see `/maintenance.html` ("Opening this Diwali", family artwork) until the file
+`/home/spicemam/public_html/.launched` exists. Admin, API, assets and uploads keep working; the owner can
+preview the real site with the private `?preview=` link (code lives only in the Mac's gitignored `dist/`).
+Template: the "Optional pre-launch page" block in `deploy/public_html.htaccess.example` (replace `TOKEN`,
+uncomment the 7 `Rewrite...` lines). The `.launched` dotfile is never downloadable (403).
 
-Owner steps in Webuzo File Manager — **in this order**:
-1. Upload `frontend/assets/images/campaign/pounding-scene.webp` → `public_html/assets/images/campaign/`
-2. Upload `frontend/maintenance.html` → `public_html/`
-3. Build the new `.htaccess` text from `deploy/public_html.htaccess.example`:
-   - in the "Optional pre-launch page" block remove the leading `# ` from the 7 `Rewrite...` lines,
-   - replace every `TOKEN` with a random code (e.g. PowerShell:
-     `-join ((1..16) | % { '{0:x}' -f (Get-Random -Maximum 16) })`) — keep it private,
-   - replace `LAUNCH_UTC` with `20261107183000`,
-   - then in Webuzo: `public_html/.htaccess` → Edit file → replace everything → Save.
-4. Check (or ask Claude to check): `https://spicemama.in` shows the Diwali page; `http://` redirects to
-   `https://`; `https://spicemama.in/?preview=<your code>` shows the real site in that browser for 7 days.
-
-When the countdown reaches zero while someone has the page open, a ~10-second Diwali fireworks show
-plays (rockets, bursts, anar fountains, "Happy Diwali!" with an "Enter the website" button), then the
-site opens. Preview the show any time with `/maintenance.html?celebrate` (it stays on the page).
-
-Notes: the template already enables the HTTPS redirect. If LiteSpeed ignores the time condition the
-page simply stays up (it never opens early) — then delete the pre-launch block on Sunday.
-A preview code was generated on the Mac but lives only in its gitignored `dist/` folder; generate a
-new one on Windows if the page was not uploaded from the Mac.
+**Launch day**
+1. On the event laptop sign in at `https://spicemama.in/admin/`.
+2. Open `https://spicemama.in` — a "Launch the website" bar appears at the bottom (admins only).
+3. Press it: the server creates `.launched` (once, audited as `site.launched`), fireworks play for 4 seconds,
+   then the home page opens. Everyone typing spicemama.in now gets the home page.
+- Rehearse the show without launching: `/maintenance.html?celebrate`.
+- Undo: delete `public_html/.launched` in File Manager (show hidden files).
+- If the button fails: delete the PRE-LAUNCH block from `public_html/.htaccess` — the site opens at once.
+- After launch the pre-launch block can be removed from `.htaccess` at leisure.
 
 ## 6. Rules that still apply
 
