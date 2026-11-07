@@ -57,9 +57,6 @@
   .hello::before { content: ''; position: absolute; inset: 22% 8%; z-index: -1; pointer-events: none;
                    background: radial-gradient(closest-side, rgba(11, 6, 18, .72), rgba(11, 6, 18, 0)) }
   .hello p { margin: 0; font-size: 1.1rem; color: #F7E6C8; text-shadow: 0 1px 8px rgba(11, 6, 18, .9) }
-  .hello a { justify-self: center; margin-top: 6px; padding: 14px 26px; border-radius: var(--r-pill); background: var(--red);
-             color: var(--white); font-weight: 700; text-decoration: none; box-shadow: 0 8px 30px rgba(200, 20, 28, .5) }
-  .hello a:focus-visible { outline: 3px solid #FFD27A; outline-offset: 3px }
 </style>
 </head>
 <body>
@@ -81,7 +78,6 @@
 <section class="hello" id="hello" aria-live="polite" hidden>
   <h2>Happy Diwali!</h2>
   <p>The Spice Mama website is now open.</p>
-  <a href="/" id="enter">Enter the website</a>
 </section>
 <script>
   // Pre-launch page with a public Launch button (owner decision 2026-11-07: anyone may press it). It asks the
@@ -98,7 +94,6 @@
       const hello = document.getElementById('hello');
       hello.hidden = false;
       requestAnimationFrame(() => hello.classList.add('on'));
-      document.getElementById('enter').focus({ preventScroll: true });
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
         document.getElementById('sky').classList.add('on');
       } else {
