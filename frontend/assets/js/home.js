@@ -258,9 +258,21 @@ tabs.forEach((t, i) => {
   });
 });
 
+// All recipe panels share the tallest panel's height on wide screens, so switching tabs never moves the page.
+// Hidden panels are measured by un-hiding them within the same task (no paint in between).
+const recipePanels = [...document.querySelectorAll('.kitchen .recipe')];
+function equalizeRecipes() {
+  recipePanels.forEach((p) => { p.style.minHeight = ''; });
+  if (matchMedia('(max-width: 899px)').matches) return;
+  let tallest = 0;
+  recipePanels.forEach((p) => { const was = p.hidden; p.hidden = false; tallest = Math.max(tallest, p.offsetHeight); p.hidden = was; });
+  recipePanels.forEach((p) => { p.style.minHeight = `${tallest}px`; });
+}
+addEventListener('resize', equalizeRecipes);
+
 initStockist(document.getElementById('stockist-card'));
 
-if (document.fonts?.ready) document.fonts.ready.then(() => { layout(); update(); });
-addEventListener('load', () => { layout(); update(); });
+if (document.fonts?.ready) document.fonts.ready.then(() => { layout(); update(); equalizeRecipes(); });
+addEventListener('load', () => { layout(); update(); equalizeRecipes(); });
 setMode();
 loadRange();
