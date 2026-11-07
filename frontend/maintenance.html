@@ -7,49 +7,42 @@
 <meta name="description" content="The Spice Mama website opens on Diwali, Sunday 8 November 2026.">
 <meta name="theme-color" content="#FBF4E6">
 <meta name="robots" content="noindex">
-<link rel="icon" href="/assets/images/brand/logo-sm.webp?v=20261107b" type="image/webp">
+<link rel="icon" href="/assets/images/brand/logo-sm.webp?v=20261107c" type="image/webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Guntur:wght@400;500;600;700&family=Rozha+One&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/tokens.css?v=20261107b">
+<link rel="stylesheet" href="/assets/css/tokens.css?v=20261107c">
 <style>
   /* Pre-launch page shown by public_html/.htaccess until the Diwali launch. Self-contained apart from tokens. */
   * { box-sizing: border-box }
   [hidden] { display: none !important }
-  body { margin: 0; min-height: 100dvh; display: grid; place-items: center; padding: var(--pad);
-         background: var(--ivory); color: var(--ink); font: 400 var(--fs-body)/1.6 var(--body) }
-  body > main { min-width: 0 }
-  /* Room for the floating Launch bar so the last line can scroll clear of it (no bar with ?celebrate). */
-  body:has(#launch-panel:not([hidden])) { padding-bottom: 170px }
-  main { width: min(640px, 100%); text-align: center; display: grid; gap: 22px; justify-items: center }
-  .logo { width: clamp(230px, 19vw, 280px); height: auto; background: var(--white); border-radius: var(--r-lg); padding: 10px 14px; box-shadow: var(--shadow-chip) }
+  /* One screen, no scrolling: main fills the viewport height and the artwork takes whatever space is left
+     (it shrinks on short screens). Very small screens may still scroll rather than clip anything. */
+  body { margin: 0; background: var(--ivory); color: var(--ink); font: 400 var(--fs-body)/1.5 var(--body) }
+  main { box-sizing: border-box; min-height: 100vh; min-height: 100dvh; height: 100dvh; width: min(640px, 100%); margin: 0 auto;
+         padding: clamp(12px, 2.6vh, 32px) var(--pad); display: flex; flex-direction: column; align-items: center;
+         justify-content: center; gap: clamp(6px, 1.5vh, 16px); text-align: center }
+  main > * { flex: none }
+  .logo { height: clamp(84px, 15vh, 175px); width: auto; max-width: 100%; background: var(--white); border-radius: var(--r-lg); padding: clamp(6px, 1vh, 10px) clamp(10px, 1.4vh, 14px); box-shadow: var(--shadow-chip) }
   .eyebrow { margin: 0; color: var(--red); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: var(--fs-small) }
-  h1 { margin: 0; font: 400 clamp(2.4rem, 7vw, 4.2rem)/1.05 var(--display); color: var(--ink) }
-  .lead { margin: 0; color: var(--ink-soft); max-width: 34ch }
+  h1 { margin: 0; font: 400 clamp(1.9rem, min(7.4vw, 6.4vh), 4rem)/1.05 var(--display); color: var(--ink) }
+  .lead { margin: 0; color: var(--ink-soft); max-width: 36ch; font-size: clamp(.92rem, 2.1vh, 1.06rem) }
   .date { margin: 0; font-weight: 700; color: var(--green) }
-  .contact { margin: 6px 0 0; padding-top: 18px; border-top: 1px solid var(--line); font-size: var(--fs-small); color: var(--ink-soft); width: 100% }
+  .contact { margin: 0; padding-top: clamp(6px, 1.2vh, 14px); border-top: 1px solid var(--line); font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft); width: 100% }
   .contact a { color: var(--ink); font-weight: 600; text-decoration-color: var(--line-strong); overflow-wrap: anywhere }
   @media (prefers-reduced-motion: no-preference) { main { animation: rise .6s ease-out both } }
   @keyframes rise { from { opacity: 0; transform: translateY(12px) } }
 
-  /* Family artwork on the page background (see assets/images/SOURCES.md). */
-  .art { width: auto; max-width: min(100%, 560px); height: auto; max-height: 36vh; margin: 2px 0 0 }
-  /* Public launch panel (anyone may press it). It floats at the bottom of
-     the screen so the button is always in view at the event, whatever the screen size. */
-  .launch { position: fixed; z-index: 5; left: 50%; bottom: max(16px, env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: max-content; max-width: calc(100vw - 32px);
-            display: grid; gap: 8px; justify-items: center; padding: 16px 22px; border: 1.5px dashed var(--red); border-radius: var(--r-lg); background: var(--white); box-shadow: 0 18px 50px rgba(43, 21, 16, .22) }
-  .launch button { font: 700 1.15rem/1 var(--body); padding: 18px 34px 15px; border: 0; border-radius: var(--r-pill); background: var(--red); color: var(--white); cursor: pointer; box-shadow: 0 10px 30px rgba(200, 20, 28, .35) }
+  /* Family artwork (see assets/images/SOURCES.md): flexible, fills the space left over, never wider than 560px. */
+  main > .art { flex: 1 1 0; min-height: 70px; max-height: 36vh; width: 100%; max-width: 560px; object-fit: contain }
+  /* Public Launch button (anyone may press it), directly under the date. */
+  .launch { display: grid; gap: 6px; justify-items: center }
+  .launch button { font: 700 clamp(1rem, 2.2vh, 1.15rem)/1 var(--body); padding: clamp(12px, 1.9vh, 18px) 32px clamp(10px, 1.6vh, 15px); border: 0; border-radius: var(--r-pill); background: var(--red); color: var(--white); cursor: pointer; white-space: nowrap; box-shadow: 0 10px 30px rgba(200, 20, 28, .35) }
   .launch button:hover { background: var(--red-deep) }
   .launch button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px }
   .launch button[disabled] { opacity: .7; cursor: progress }
   .launch p { margin: 0; font-size: var(--fs-small); color: var(--ink-soft) }
   .launch .error { color: var(--bad); font-weight: 600 }
-  /* Wide screens: the box sits in the bottom-right corner, beside the centred column instead of over it. */
-  @media (min-width: 1100px) {
-    .launch { left: auto; right: 24px; bottom: 24px; transform: none; width: 310px; padding: 14px 16px; text-align: center }
-    .launch button { white-space: nowrap }
-    body:has(#launch-panel:not([hidden])) { padding-bottom: var(--pad) }
-  }
   /* Diwali fireworks after Launch is pressed (or with ?celebrate): full-screen canvas over a night sky. */
   .sky { position: fixed; inset: 0; z-index: 10; pointer-events: none; opacity: 0; transition: opacity .8s ease;
          background: radial-gradient(120% 90% at 50% 100%, #2B1236 0%, #170A22 55%, #0B0612 100%) }
@@ -71,19 +64,19 @@
 </head>
 <body>
 <main>
-  <img class="logo" src="/assets/images/brand/logo.webp?v=20261107b" width="700" height="439" alt="Oont Chap Spice Mama">
-  <img class="art" src="/assets/images/art/pappad.webp?v=20261107b" width="900" height="511" alt="Illustration: the Spice Mama family sharing a meal together">
+  <img class="logo" src="/assets/images/brand/logo.webp?v=20261107c" width="700" height="439" alt="Oont Chap Spice Mama">
+  <img class="art" src="/assets/images/art/pappad.webp?v=20261107c" width="900" height="511" alt="Illustration: the Spice Mama family sharing a meal together">
   <p class="eyebrow">Our website is getting ready</p>
   <h1>Opening this Diwali</h1>
   <p class="lead">We are putting the finishing touches to the Spice Mama website. Please visit us again on Diwali.</p>
   <p class="date">Sunday, 8 November 2026</p>
+  <div class="launch" id="launch-panel">
+    <button type="button" id="launch">🚀 Launch the website</button>
+    <p>Press to open the Spice Mama website for everyone.</p>
+    <p class="error" id="launch-error" role="alert" hidden></p>
+  </div>
   <p class="contact">Until then, reach us at <a href="tel:+919441547648">+91 94415 47648</a> or <a href="mailto:andhrastandardproducts@gmail.com">andhrastandardproducts@gmail.com</a></p>
 </main>
-<div class="launch" id="launch-panel">
-  <button type="button" id="launch">🚀 Launch the website</button>
-  <p>Press to open the Spice Mama website for everyone.</p>
-  <p class="error" id="launch-error" role="alert" hidden></p>
-</div>
 <div class="sky" id="sky" aria-hidden="true"><canvas id="fireworks"></canvas></div>
 <section class="hello" id="hello" aria-live="polite" hidden>
   <h2>Happy Diwali!</h2>
