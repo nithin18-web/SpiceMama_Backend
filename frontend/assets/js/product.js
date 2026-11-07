@@ -2,7 +2,7 @@
 import { api, ApiError, describeError } from './api-client.js';
 import { config } from './config.js';
 import { h, icon, links, stateBlock } from './ui.js';
-import { lookFor } from './product-look.js';
+import { artFor, lookFor } from './product-look.js';
 import { productCard } from './cards.js';
 import { observeReveals } from './site.js';
 
@@ -71,7 +71,11 @@ function render(p, category) {
     p.description && p.description !== p.short_description ? [h('h2', {}, 'About this pack'), h('p', { class: 'desc' }, p.description)] : null,
     p.ingredients ? [h('h2', {}, 'Ingredients'), h('p', {}, p.ingredients)] : null,
     askBlock(p));
-  box.replaceChildren(h('div', { class: 'pd' }, gallery(p, look), info));
+  const art = artFor(p);
+  const kitchen = art ? h('section', { class: 'pd-art', 'aria-label': 'From the Spice Mama kitchen' },
+    h('img', { src: art.src, width: art.w, height: art.h, alt: art.alt, loading: 'lazy', decoding: 'async' }),
+    h('p', {}, 'From the Spice Mama kitchen')) : null;
+  box.replaceChildren(h('div', { class: 'pd' }, gallery(p, look), info), kitchen);
   box.setAttribute('aria-busy', 'false');
 
   crumbs.replaceChildren(

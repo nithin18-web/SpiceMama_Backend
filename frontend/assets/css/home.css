@@ -169,6 +169,10 @@ html:not(.motion) .progress { display: none }
 .label figcaption b { font-family: var(--display); font-weight: 400; font-size: clamp(24px, 2vw, 34px); display: block; color: var(--red); line-height: 1.1; margin-bottom: 6px }
 .marks { margin-top: clamp(50px, 6vw, 90px); display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 5vw; align-items: start; border-top: 2px solid var(--ink); padding-top: 36px }
 .marks h3 { font-size: clamp(28px, 2.6vw, 44px) }
+/* Title on top, list centred beneath (labels right-aligned to the centre line). */
+.marks { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: clamp(18px, 2.4vw, 30px) }
+.marks dl { justify-content: center; text-align: left }
+.marks dt { text-align: right }
 .marks dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 12px 28px }
 .marks dt { font-weight: 700 }
 .marks dd { margin: 0; color: var(--ink-soft) }

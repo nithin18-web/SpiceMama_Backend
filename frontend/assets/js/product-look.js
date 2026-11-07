@@ -22,6 +22,25 @@ const FALLBACK = [
   { c: '#C79A3B', f: '#2B1510' }, { c: '#74358A', f: '#FBF4E6' }, { c: '#1C7A72', f: '#FBF4E6' },
 ];
 
+// Spice Mama family illustration shown on a product's page ("From the Spice Mama kitchen").
+const CHILLI = { src: '/assets/images/art/chilli-pounding.webp', w: 670, h: 1000, alt: 'Illustration: the Spice Mama family pounding dried red chillies' };
+const ART = {
+  'oont-chap-three-mango-mirchi-powder': CHILLI,
+  'guntur-gold-premium-chilli-powder': CHILLI,
+  'chilli-powder-guntur-special': CHILLI,
+  'oont-chap-chilli-powder': CHILLI,
+  'chicken-masala': { src: '/assets/images/art/chicken-masala.webp', w: 1000, h: 869, alt: 'Illustration: the Spice Mama couple cooking chicken curry' },
+  'garam-masala': { src: '/assets/images/art/garam-masala.webp', w: 1000, h: 864, alt: 'Illustration: the Spice Mama family grinding spices at home' },
+  'ragi-flour': { src: '/assets/images/art/ragi-mudde.webp', w: 857, h: 1000, alt: 'Illustration: making ragi mudde in the Spice Mama kitchen' },
+  'rasam-powder': { src: '/assets/images/art/rasam.webp', w: 1000, h: 740, alt: 'Illustration: the Spice Mama couple cooking rasam' },
+  'sambar-powder': { src: '/assets/images/art/sambar.webp', w: 811, h: 1000, alt: 'Illustration: the Spice Mama couple tasting sambar' },
+  'kasuri-methi': { src: '/assets/images/art/kasuri-methi.webp', w: 848, h: 1000, alt: 'Illustration: the Spice Mama family cooking with kasuri methi' },
+};
+
+export function artFor(product) {
+  return ART[product.slug] || null;
+}
+
 export function lookFor(product) {
   const known = LOOKS[product.slug];
   if (known) return known;

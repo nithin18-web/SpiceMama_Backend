@@ -61,6 +61,13 @@
 .pd-skel .stagebox { background: none }
 .pd-skel .line { height: 22px; margin: 12px 0; border-radius: 8px }
 .related { margin-top: var(--section) }
+/* Product page: the matching family illustration, on the page background, centred under the details. */
+.pd-art { margin-top: clamp(48px, 7vw, 100px); display: grid; justify-items: center; gap: 10px; text-align: center }
+.pd-art img { width: auto; height: auto; max-width: min(100%, 560px); max-height: min(60vh, 460px) }
+.pd-art p { margin: 0; font-family: var(--display); font-size: clamp(22px, 2.2vw, 32px); color: var(--red) }
+/* About page: family-table illustrations side by side at one height, wrapping on narrow screens. */
+.table-art { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: clamp(20px, 4vw, 56px); margin-top: clamp(24px, 4vw, 48px) }
+.table-art img { height: clamp(170px, 20vw, 280px); width: auto; max-width: 100% }
 .related h2 { font-size: clamp(34px, 3.6vw, 60px); margin-bottom: 26px }
 
 /* ---------- about ---------- */
