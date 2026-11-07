@@ -99,7 +99,12 @@
       } else {
         fireworks(document.getElementById('sky'), SHOW_MS);
       }
-      if (thenOpenSite) setTimeout(() => location.replace('/'), SHOW_MS + 200);
+      if (thenOpenSite) {
+        // The browser's cached copy of "/" is still this pre-launch page; re-download it first so the
+        // redirect shows the real home page (a revalidation alone can wrongly answer 304 Not Modified).
+        const fresh = fetch('/', { cache: 'reload', credentials: 'same-origin' }).catch(() => {});
+        setTimeout(() => fresh.finally(() => location.replace('/')), SHOW_MS + 200);
+      }
     }
 
     function fail(message) {

@@ -182,6 +182,10 @@ uncomment the 7 `Rewrite...` lines). The `.launched` dotfile is never downloadab
 - Undo: delete `public_html/.launched` in File Manager (show hidden files).
 - If the button fails: delete the PRE-LAUNCH block from `public_html/.htaccess` — the site opens at once.
 - After launch the pre-launch block can be removed from `.htaccess` at leisure.
+- Caching trap (found 2026-11-07): browsers revalidate `/` with If-Modified-Since, and LiteSpeed answers
+  304 if the page file is *older* than the pre-launch page they saw — they then stay on the pre-launch page.
+  Whenever `maintenance.html` is uploaded, upload the public pages too with *later* file times (the launch
+  page also re-downloads `/` before redirecting).
 
 ## 6. Rules that still apply
 
