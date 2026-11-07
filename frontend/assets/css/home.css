@@ -34,7 +34,7 @@
 .motion .layer.red { clip-path: inset(0 0 0 var(--seam, 50%)) }
 /* Copy sits high and scales with viewport height too, so headline, lede and buttons stay clear of
    the big "Guntur" word (its top is about 14.85vw above the bottom of the screen). */
-.motion .hero-copy { position: absolute; left: var(--pad); top: max(108px, 14vh); width: min(40vw, 560px) }
+.motion .hero-copy { position: absolute; left: var(--pad); top: max(120px, 15vh); width: min(40vw, 560px) }
 .motion .hero-copy h1 { font-size: clamp(30px, min(3.4vw, 6vh), 58px); max-width: 13ch }
 .motion .hero-copy .lede { font-size: 1rem; margin-top: 12px }
 .motion .hero-copy .ctas { margin-top: 18px }
@@ -51,7 +51,7 @@ html:not(.motion) .hero-copy { background: var(--ivory); padding: 118px var(--pa
 html:not(.motion) .pouch { position: relative; z-index: 4; align-self: center; width: min(66vw, 400px); height: auto; margin-top: calc(-1 * clamp(160px, 22vw, 260px)) }
 html:not(.motion) .te-tag { display: none }
 html:not(.motion) .origin { padding: 64px var(--pad) 90px }
-@media (max-width: 899px) { html:not(.motion) .hero-copy { padding-top: 112px } }
+@media (max-width: 899px) { html:not(.motion) .hero-copy { padding-top: 122px } }
 @media (min-width: 900px) {
   html:not(.motion) .stage { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr) }
   html:not(.motion) .hero-copy { grid-column: 1; grid-row: 1; min-height: 92vh; padding: 150px var(--pad) 110px; display: flex; flex-direction: column; justify-content: center }
@@ -196,7 +196,7 @@ html:not(.motion) .progress { display: none }
   .motion .layer.ivory { clip-path: inset(0 0 calc(100% - var(--seam, 55%)) 0) }
   .motion .layer.red { clip-path: inset(var(--seam, 55%) 0 0 0) }
   .motion .bigword { font-size: 31vw; bottom: -.14em }
-  .motion .hero-copy { top: calc(env(safe-area-inset-top, 0px) + 100px); left: var(--pad); right: var(--pad); width: auto }
+  .motion .hero-copy { top: calc(env(safe-area-inset-top, 0px) + 108px); left: var(--pad); right: var(--pad); width: auto }
   .motion .hero-copy h1 { font-size: clamp(30px, 8.4vw, 40px); max-width: none }
   .motion .hero-copy .lede { font-size: 1rem; margin-top: 12px }
   .motion .ctas { margin-top: 18px }
