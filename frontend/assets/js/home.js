@@ -126,11 +126,27 @@ function setMode() {
 }
 
 function layout() {
-  if (!motionOn()) return;
-  dist = Math.max(0, track.scrollWidth - innerWidth);
-  range.style.height = `${VH + dist}px`;
-  const last = cards[cards.length - 1];
-  c1 = last ? last.offsetLeft + last.offsetWidth / 2 - dist : innerWidth / 2;
+  if (motionOn()) {
+    dist = Math.max(0, track.scrollWidth - innerWidth);
+    range.style.height = `${VH + dist}px`;
+    const last = cards[cards.length - 1];
+    c1 = last ? last.offsetLeft + last.offsetWidth / 2 - dist : innerWidth / 2;
+  }
+  keepHashInView();
+}
+
+// Opening the page at a section below the range (e.g. /#kitchen from the "Recipes" link): the browser jumps
+// there before the range has loaded, then the range grows (products, then each photo) and pushes the section
+// down, leaving the visitor on the product shelf. Re-align to the section after each layout change until the
+// visitor scrolls themselves, or for 6 seconds at most.
+let hashTarget = location.hash.length > 1 ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
+if (hashTarget) {
+  const release = () => { hashTarget = null; };
+  ['wheel', 'touchstart', 'keydown', 'mousedown'].forEach((type) => addEventListener(type, release, { once: true, passive: true }));
+  setTimeout(release, 6000);
+}
+function keepHashInView() {
+  if (hashTarget) hashTarget.scrollIntoView({ block: 'start' });
 }
 
 function setActive(i, force) {
