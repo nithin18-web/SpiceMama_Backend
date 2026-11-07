@@ -118,6 +118,9 @@ html:not(.motion) .progress { display: none }
 @keyframes fade-up { from { opacity: 0; transform: translateY(10px) } }
 .dish { position: relative; border-radius: var(--r-xl); overflow: hidden; aspect-ratio: 4 / 3; background: #e9dcc6 }
 .dish img { width: 100%; height: 115%; object-fit: cover; transform: translateY(var(--par, 0px)) }
+/* Recipe images are the family illustrations (whole artwork on white): show them in full, no parallax zoom. */
+.kitchen .dish { background: #fff }
+.kitchen .dish img { height: 100%; object-fit: contain; transform: none }
 .dish .tagph { position: absolute; left: 14px; bottom: 14px; background: rgba(251, 244, 230, .94); color: var(--ink); font-size: .8rem; font-weight: 500; border-radius: var(--r-sm); padding: 6px 10px 4px; border: 1.5px dashed var(--ink-soft); max-width: 80% }
 .recipe h3 { font-size: clamp(32px, 3vw, 52px); margin-bottom: 6px }
 .recipe .uses { display: flex; align-items: center; gap: 12px; margin: 14px 0 22px; font-weight: 600; font-size: .95rem; text-decoration: none; width: fit-content; border-radius: var(--r-md) }
