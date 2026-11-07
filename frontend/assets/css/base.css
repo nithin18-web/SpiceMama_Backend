@@ -66,7 +66,7 @@ p { margin: 0 0 1em; max-width: 60ch }
 }
 .nav > * { pointer-events: auto }
 .brandchip { background: var(--white); border-radius: var(--r-md); padding: 6px 14px 4px; box-shadow: var(--shadow-chip); display: block }
-.brandchip img { height: 44px; width: auto }
+.brandchip img { height: 66px; width: auto }
 .navlinks { display: flex; align-items: center; gap: 4px; background: var(--white); border-radius: var(--r-pill); padding: 5px; box-shadow: var(--shadow-chip) }
 .navlinks a, .navlinks button {
   text-decoration: none; font-weight: 500; font-size: .92rem; padding: 9px 15px 7px;
@@ -101,7 +101,7 @@ p { margin: 0 0 1em; max-width: 60ch }
 .menu-panel .menu-contact a { font-family: var(--body); font-size: 1rem; padding: 4px 0; color: var(--ink) }
 
 @media (max-width: 899px) {
-  .brandchip img { height: 36px }
+  .brandchip img { height: 44px }
   .navlinks a:not(.cta) { display: none }
   .navlinks .menu-btn { display: inline-flex }
 }

@@ -42,12 +42,13 @@ const target = (q, w) => w * 0.5 + Math.max(0, c1 - w * 0.5) * seg(q, 0.8, 1);
 const motionOn = () => root.classList.contains('motion');
 
 // ---------- range cards ----------
-function productCard(p) {
+function productCard(p, i = 0) {
   const look = lookFor(p);
   const im = primaryImage(p);
   return h('article', { class: 'card', id: `p-${p.slug}`, dataset: { c: look.c, f: look.f }, vars: { '--c': look.c, '--cf': look.f } },
     im
-      ? h('img', { src: im.url, alt: im.alt_text || p.name, loading: 'lazy', decoding: 'async' })
+      // First packs load straight away so the shelf isn't blank as it scrolls into view.
+      ? h('img', { src: im.url, alt: im.alt_text || p.name, loading: i < 4 ? 'eager' : 'lazy', decoding: 'async' })
       : h('div', { class: 'noimg ph', style: { height: '40vh', display: 'grid', placeItems: 'center', width: '100%' } }, 'Photo to come'),
     look.line ? h('p', { class: 'maker' }, look.line) : h('p', { class: 'maker' }, ''),
     h('h3', {}, h('a', { href: links.product(p.slug) }, p.name)),
@@ -82,7 +83,7 @@ async function loadRange() {
       rangeStatus.textContent = 'No products to show yet.';
       ptotal.textContent = '0';
     } else {
-      list.forEach((p) => track.append(productCard(p)));
+      list.forEach((p, i) => track.append(productCard(p, i)));
       if (total > list.length) track.append(endCard(total));
       ptotal.textContent = String(list.length);
       rangeStatus.textContent = `Showing ${list.length} of ${total} products.`;
@@ -125,11 +126,27 @@ function setMode() {
 }
 
 function layout() {
-  if (!motionOn()) return;
-  dist = Math.max(0, track.scrollWidth - innerWidth);
-  range.style.height = `${VH + dist}px`;
-  const last = cards[cards.length - 1];
-  c1 = last ? last.offsetLeft + last.offsetWidth / 2 - dist : innerWidth / 2;
+  if (motionOn()) {
+    dist = Math.max(0, track.scrollWidth - innerWidth);
+    range.style.height = `${VH + dist}px`;
+    const last = cards[cards.length - 1];
+    c1 = last ? last.offsetLeft + last.offsetWidth / 2 - dist : innerWidth / 2;
+  }
+  keepHashInView();
+}
+
+// Opening the page at a section below the range (e.g. /#kitchen from the "Recipes" link): the browser jumps
+// there before the range has loaded, then the range grows (products, then each photo) and pushes the section
+// down, leaving the visitor on the product shelf. Re-align to the section after each layout change until the
+// visitor scrolls themselves, or for 6 seconds at most.
+let hashTarget = location.hash.length > 1 ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
+if (hashTarget) {
+  const release = () => { hashTarget = null; };
+  ['wheel', 'touchstart', 'keydown', 'mousedown'].forEach((type) => addEventListener(type, release, { once: true, passive: true }));
+  setTimeout(release, 6000);
+}
+function keepHashInView() {
+  if (hashTarget) hashTarget.scrollIntoView({ block: 'start' });
 }
 
 function setActive(i, force) {
@@ -257,9 +274,21 @@ tabs.forEach((t, i) => {
   });
 });
 
+// All recipe panels share the tallest panel's height on wide screens, so switching tabs never moves the page.
+// Hidden panels are measured by un-hiding them within the same task (no paint in between).
+const recipePanels = [...document.querySelectorAll('.kitchen .recipe')];
+function equalizeRecipes() {
+  recipePanels.forEach((p) => { p.style.minHeight = ''; });
+  if (matchMedia('(max-width: 899px)').matches) return;
+  let tallest = 0;
+  recipePanels.forEach((p) => { const was = p.hidden; p.hidden = false; tallest = Math.max(tallest, p.offsetHeight); p.hidden = was; });
+  recipePanels.forEach((p) => { p.style.minHeight = `${tallest}px`; });
+}
+addEventListener('resize', equalizeRecipes);
+
 initStockist(document.getElementById('stockist-card'));
 
-if (document.fonts?.ready) document.fonts.ready.then(() => { layout(); update(); });
-addEventListener('load', () => { layout(); update(); });
+if (document.fonts?.ready) document.fonts.ready.then(() => { layout(); update(); equalizeRecipes(); });
+addEventListener('load', () => { layout(); update(); equalizeRecipes(); });
 setMode();
 loadRange();

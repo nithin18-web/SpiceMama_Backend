@@ -77,6 +77,8 @@ $session = new ArraySession();
 $config['upload_path'] = $uploads;
 $config['storage_path'] = $root . '/storage';
 $config['throttle_key'] = str_repeat('k', 64);
+$config['launch_flag'] = $root . '/public/.launched';
+mkdir($root . '/public', 0755, true);
 $kernel = new Kernel(fn(): PDO => $db, $session, $clock, $config);
 $password = 'correct horse battery staple';
 $adminId = (new AdminRepository($db, $clock))->create('owner@example.test', 'MOCK Owner', $password);
@@ -188,7 +190,7 @@ $first = status(send($pid, image('jpeg', 40, 30, '<?php echo "pwned"; ?>')), 201
 check(preg_match('#^/uploads/products/[a-f0-9]{32}\.jpg$#', $first['url']) === 1 && $first['sort_order'] === 0, 'generated public URL');
 $stored = $uploads . '/' . basename($first['url']);
 check(is_file($stored) && !str_contains(file_get_contents($stored), '<?php'), 're-encoding strips appended payload');
-check(decoct(fileperms($stored) & 0777) === '644', 'upload not executable');
+check(PHP_OS_FAMILY === 'Windows' || decoct(fileperms($stored) & 0777) === '644', 'upload not executable'); // no Unix modes on Windows
 $second = status(send($pid, image('png'), ''), 201, 'upload png without alt')['data'];
 $third = status(send($pid, image('webp')), 201, 'upload webp')['data'];
 check($third['sort_order'] === 2, 'appended to gallery');
@@ -313,6 +315,33 @@ status($login('owner@example.test', $password), 200, 'reactivated');
 status(write('POST', '/admin/logout'), 204, 'logout');
 status(call('GET', '/admin/me'), 401, 'logged out');
 status(call('POST', '/admin/logout', null, ['x-csrf-token' => token()]), 401, 'logout requires session');
+
+// --- Site launch ------------------------------------------------------------
+status(call('POST', '/admin/launch', null, ['x-csrf-token' => token()]), 401, 'launch requires admin session');
+status($login('owner@example.test', $password), 200, 'login for launch');
+status(call('POST', '/admin/launch'), 403, 'launch requires CSRF');
+check(!is_file($root . '/public/.launched'), 'no marker before launch');
+$first = status(write('POST', '/admin/launch'), 200, 'launch')['data'];
+check($first['launched'] === true && is_file($root . '/public/.launched'), 'launch creates marker');
+$now = $now->modify('+5 minutes');
+check(status(write('POST', '/admin/launch'), 200, 'launch again')['data']['launched_at'] === $first['launched_at'], 'second launch keeps original time');
+check((int) $db->query("SELECT COUNT(*) FROM admin_audit_logs WHERE action='site.launched'")->fetchColumn() === 1, 'launch audited once');
+status(write('POST', '/admin/logout'), 204, 'logout after launch');
+
+// Public Launch button: no session, but the Origin must be this site.
+unlink($root . '/public/.launched');
+$site = ['host' => 'spicemama.in'];
+status(call('POST', '/launch', null, $site), 403, 'public launch without Origin');
+status(call('POST', '/launch', null, $site + ['origin' => 'https://evil.example']), 403, 'public launch from another site');
+status(call('POST', '/launch', null, $site + ['origin' => 'https://spicemama.in.evil.example']), 403, 'public launch from look-alike host');
+check(!is_file($root . '/public/.launched'), 'rejected public launches create no marker');
+status(call('POST', '/launch', null, $site + ['origin' => 'https://spicemama.in'], ['x' => '1']), 422, 'public launch rejects query');
+$public = status(call('POST', '/launch', null, $site + ['origin' => 'https://spicemama.in']), 200, 'public launch')['data'];
+check($public['launched'] === true && is_file($root . '/public/.launched'), 'public launch creates marker');
+check(status(call('POST', '/launch', null, $site + ['origin' => 'https://spicemama.in']), 200, 'public launch again')['data']['launched_at'] === $public['launched_at'], 'second public launch keeps original time');
+check((int) $db->query("SELECT COUNT(*) FROM admin_audit_logs WHERE action='site.launched' AND admin_id IS NULL AND details_json LIKE '%public%'")->fetchColumn() === 1, 'public launch audited once');
+status(call('GET', '/launch', null, $site + ['origin' => 'https://spicemama.in']), 404, 'GET /launch is not a route');
+status(call('GET', '/admin/me'), 401, 'public launch starts no admin session');
 
 // --- Throttling -------------------------------------------------------------
 for ($i = 0; $i < 5; ++$i) {

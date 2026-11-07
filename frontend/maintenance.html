@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Opening this Diwali · Spice Mama</title>
+<meta name="description" content="The Spice Mama website opens on Diwali, Sunday 8 November 2026.">
+<meta name="theme-color" content="#FBF4E6">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/assets/images/brand/logo-sm.webp?v=20261107e" type="image/webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Guntur:wght@400;500;600;700&family=Rozha+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/tokens.css?v=20261107e">
+<style>
+  /* Pre-launch page shown by public_html/.htaccess until the Diwali launch. Self-contained apart from tokens. */
+  * { box-sizing: border-box }
+  [hidden] { display: none !important }
+  /* One screen, no scrolling: main fills the viewport height and the artwork takes whatever space is left
+     (it shrinks on short screens). Very small screens may still scroll rather than clip anything. */
+  body { margin: 0; background: var(--ivory); color: var(--ink); font: 400 var(--fs-body)/1.5 var(--body) }
+  main { box-sizing: border-box; min-height: 100vh; min-height: 100dvh; height: 100dvh; width: min(640px, 100%); margin: 0 auto;
+         padding: clamp(12px, 2.6vh, 32px) var(--pad); display: flex; flex-direction: column; align-items: center;
+         justify-content: center; gap: clamp(6px, 1.5vh, 16px); text-align: center }
+  main > * { flex: none }
+  .logo { height: clamp(84px, 15vh, 175px); width: auto; max-width: 100%; background: var(--white); border-radius: var(--r-lg); padding: clamp(6px, 1vh, 10px) clamp(10px, 1.4vh, 14px); box-shadow: var(--shadow-chip) }
+  .eyebrow { margin: 0; color: var(--red); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: var(--fs-small) }
+  h1 { margin: 0; font: 400 clamp(1.9rem, min(7.4vw, 6.4vh), 4rem)/1.05 var(--display); color: var(--ink) }
+  .lead { margin: 0; color: var(--ink-soft); max-width: 36ch; font-size: clamp(.92rem, 2.1vh, 1.06rem) }
+  .date { margin: 0; font-weight: 700; color: var(--green) }
+  .contact { margin: 0; padding-top: clamp(6px, 1.2vh, 14px); border-top: 1px solid var(--line); font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft); width: 100% }
+  .contact a { color: var(--ink); font-weight: 600; text-decoration-color: var(--line-strong); overflow-wrap: anywhere }
+  @media (prefers-reduced-motion: no-preference) { main { animation: rise .6s ease-out both } }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px) } }
+
+  /* Family artwork (see assets/images/SOURCES.md): flexible, fills the space left over, never wider than 560px. */
+  main > .art { flex: 1 1 0; min-height: 70px; max-height: 36vh; width: 100%; max-width: 560px; object-fit: contain }
+  /* Public Launch button (anyone may press it), directly under the date. */
+  .launch { display: grid; gap: 6px; justify-items: center }
+  .launch button { font: 700 clamp(1rem, 2.2vh, 1.15rem)/1 var(--body); padding: clamp(12px, 1.9vh, 18px) 32px clamp(10px, 1.6vh, 15px); border: 0; border-radius: var(--r-pill); background: var(--red); color: var(--white); cursor: pointer; white-space: nowrap; box-shadow: 0 10px 30px rgba(200, 20, 28, .35) }
+  .launch button:hover { background: var(--red-deep) }
+  .launch button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px }
+  .launch button[disabled] { opacity: .7; cursor: progress }
+  .launch p { margin: 0; font-size: var(--fs-small); color: var(--ink-soft) }
+  .launch .error { color: var(--bad); font-weight: 600 }
+  /* Diwali fireworks after Launch is pressed (or with ?celebrate): full-screen canvas over a night sky. */
+  .sky { position: fixed; inset: 0; z-index: 10; pointer-events: none; opacity: 0; transition: opacity .8s ease;
+         background: radial-gradient(120% 90% at 50% 100%, #2B1236 0%, #170A22 55%, #0B0612 100%) }
+  .sky.on { opacity: 1 }
+  .sky canvas { position: absolute; inset: 0; width: 100%; height: 100% }
+  .hello { position: fixed; inset: 0; z-index: 11; display: grid; place-content: center; gap: 18px; padding: var(--pad);
+           text-align: center; color: #FFF6E0; pointer-events: none; opacity: 0; transform: scale(.94);
+           transition: opacity 1s ease 1.2s, transform 1s ease 1.2s }
+  .hello.on { opacity: 1; transform: none; pointer-events: auto }
+  .hello h2 { margin: 0; font: 400 clamp(2.6rem, 9vw, 5.4rem)/1.05 var(--display); color: #FFD27A;
+              text-shadow: 0 2px 18px rgba(11, 6, 18, .9), 0 0 24px rgba(255, 170, 60, .55), 0 0 2px #FFE7B0 }
+  .hello::before { content: ''; position: absolute; inset: 22% 8%; z-index: -1; pointer-events: none;
+                   background: radial-gradient(closest-side, rgba(11, 6, 18, .72), rgba(11, 6, 18, 0)) }
+  .hello p { margin: 0; font-size: 1.1rem; color: #F7E6C8; text-shadow: 0 1px 8px rgba(11, 6, 18, .9) }
+</style>
+</head>
+<body>
+<main>
+  <img class="logo" src="/assets/images/brand/logo.webp?v=20261107e" width="700" height="439" alt="Oont Chap Spice Mama">
+  <img class="art" src="/assets/images/art/pappad.webp?v=20261107e" width="900" height="511" alt="Illustration: the Spice Mama family sharing a meal together">
+  <p class="eyebrow">Our website is getting ready</p>
+  <h1>Opening this Diwali</h1>
+  <p class="lead">We are putting the finishing touches to the Spice Mama website. Please visit us again on Diwali.</p>
+  <p class="date">Sunday, 8 November 2026</p>
+  <div class="launch" id="launch-panel">
+    <button type="button" id="launch">🚀 Launch the website</button>
+    <p>Press to open the Spice Mama website for everyone.</p>
+    <p class="error" id="launch-error" role="alert" hidden></p>
+  </div>
+  <p class="contact">Until then, reach us at <a href="tel:+919441547648">+91 94415 47648</a> or <a href="mailto:andhrastandardproducts@gmail.com">andhrastandardproducts@gmail.com</a></p>
+</main>
+<div class="sky" id="sky" aria-hidden="true"><canvas id="fireworks"></canvas></div>
+<section class="hello" id="hello" aria-live="polite" hidden>
+  <h2>Happy Diwali!</h2>
+  <p>The Spice Mama website is now open.</p>
+</section>
+<script>
+  // Pre-launch page with a public Launch button (owner decision 2026-11-07: anyone may press it). It asks the
+  // API to launch the site (creates the marker the web server checks), plays 4 seconds of fireworks, then opens
+  // the home page, which from that moment is served to everyone. ?celebrate previews the show without launching.
+  (() => {
+    const SHOW_MS = 4000;
+    const panel = document.getElementById('launch-panel');
+    const button = document.getElementById('launch');
+    const error = document.getElementById('launch-error');
+    const api = (path, options = {}) => fetch('/api/v1' + path, { credentials: 'same-origin', cache: 'no-store', ...options, headers: { Accept: 'application/json', ...(options.headers || {}) } });
+
+    function celebrate(thenOpenSite) {
+      const hello = document.getElementById('hello');
+      hello.hidden = false;
+      requestAnimationFrame(() => hello.classList.add('on'));
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.getElementById('sky').classList.add('on');
+      } else {
+        fireworks(document.getElementById('sky'), SHOW_MS);
+      }
+      if (thenOpenSite) {
+        // The browser's cached copy of "/" is still this pre-launch page; re-download it first so the
+        // redirect shows the real home page (a revalidation alone can wrongly answer 304 Not Modified).
+        const fresh = fetch('/', { cache: 'reload', credentials: 'same-origin' }).catch(() => {});
+        setTimeout(() => fresh.finally(() => location.replace('/')), SHOW_MS + 200);
+      }
+    }
+
+    function fail(message) {
+      error.textContent = message;
+      error.hidden = false;
+      button.disabled = false;
+      button.textContent = '🚀 Launch the website';
+    }
+
+    button.addEventListener('click', async () => {
+      button.disabled = true;
+      button.textContent = 'Launching…';
+      error.hidden = true;
+      try {
+        const res = await api('/launch', { method: 'POST' });
+        if (res.ok) { panel.hidden = true; celebrate(true); return; }
+        fail('The website could not be launched just now. Please try again.');
+      } catch {
+        fail('No connection to the server. Check the internet and try again.');
+      }
+    });
+
+    if (new URLSearchParams(location.search).has('celebrate')) {
+      panel.hidden = true;
+      setTimeout(() => celebrate(false), 600);
+    }
+  })();
+
+  // Lightweight canvas fireworks: rockets rise and burst into sparks with gravity, drag, twinkle and a
+  // crackle of glitter; anar (flower-pot) fountains spray from the ground; launches speed up towards a
+  // finale. Stops itself after `duration` ms.
+  function fireworks(sky, duration) {
+    const canvas = sky.querySelector('canvas');
+    const ctx = canvas.getContext('2d');
+    const colours = ['#FFD27A', '#FFB347', '#FF7A3D', '#FF4D4D', '#FF6FB5', '#B98CFF', '#6EE7A8', '#FFFFFF', '#FFE066'];
+    const pick = (list) => list[Math.floor(Math.random() * list.length)];
+    let w = 0, h = 0, dpr = 1;
+    const fit = () => {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = canvas.clientWidth; h = canvas.clientHeight;
+      canvas.width = w * dpr; canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    fit();
+    addEventListener('resize', fit);
+    sky.classList.add('on');
+
+    const rockets = [], sparks = [];
+    const MAX_SPARKS = 3200;
+    // Anar fountains along the ground, kept away from the centre where the message sits.
+    const fountains = [0.07, 0.24, 0.76, 0.93];
+    const spray = (fx, intensity) => {
+      for (let i = 0; i < intensity && sparks.length < MAX_SPARKS; i++) {
+        const angle = -Math.PI / 2 + (Math.random() - 0.5) * 0.55;
+        const speed = h / 120 + Math.random() * (h / 150);
+        sparks.push({ x: w * fx + (Math.random() - 0.5) * 6, y: h - 4, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+                      life: 0.8, decay: 0.016 + Math.random() * 0.012, colour: Math.random() < 0.7 ? '#FFD27A' : '#FFFFFF',
+                      size: 1.2 + Math.random(), crackle: Math.random() < 0.12 });
+      }
+    };
+    const launch = () => {
+      const x = w * (0.12 + Math.random() * 0.76);
+      rockets.push({ x, y: h + 10, vx: (Math.random() - 0.5) * 1.6, vy: -(h / 95 + Math.random() * (h / 160)),
+                     colour: pick(colours), trail: [] });
+    };
+    const burst = (x, y, colour) => {
+      const kind = Math.random();
+      const count = kind < 0.25 ? 140 : 90;
+      const second = Math.random() < 0.45 ? pick(colours) : colour;
+      for (let i = 0; i < count && sparks.length < MAX_SPARKS; i++) {
+        const angle = (Math.PI * 2 * i) / count + Math.random() * 0.08;
+        const speed = kind < 0.25 ? 3.2 + Math.random() * 1.2            // big round peony
+                    : kind < 0.55 ? 1.5 + Math.random() * 3.6           // scattered chrysanthemum
+                    : (i % 2 ? 4 : 2.2) + Math.random() * 0.6;          // two-ring burst
+        sparks.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+                      life: 1, decay: 0.008 + Math.random() * 0.01, colour: i % 3 ? colour : second,
+                      size: 1.9 + Math.random() * 1.6, crackle: Math.random() < 0.18 });
+      }
+    };
+    const start = performance.now();
+    let nextLaunch = 0, last = start;
+    const frame = (now) => {
+      const elapsed = now - start;
+      const step = Math.min((now - last) / 16.7, 3);
+      last = now;
+      // Launch pace builds from ~5 to ~14 rockets a second, with a finale volley at the end.
+      if (elapsed < duration && now >= nextLaunch) {
+        const volley = elapsed > duration - 1800 ? 4 : 1 + (Math.random() < 0.35 + elapsed / duration ? 1 : 0);
+        for (let i = 0; i < volley; i++) launch();
+        nextLaunch = now + Math.max(90, 260 - (elapsed / duration) * 170) * (0.6 + Math.random() * 0.8);
+      }
+      if (elapsed < duration) for (const fx of fountains) spray(fx, Math.round(3 * step));
+      // Fade previous frame for light trails.
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fillRect(0, 0, w, h);
+      ctx.globalCompositeOperation = 'lighter';
+
+      for (let i = rockets.length - 1; i >= 0; i--) {
+        const r = rockets[i];
+        r.x += r.vx * step; r.y += r.vy * step; r.vy += 0.09 * step;
+        ctx.fillStyle = '#FFE7B0';
+        ctx.beginPath(); ctx.arc(r.x, r.y, 2.2, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = 'rgba(255, 180, 90, .5)';
+        ctx.beginPath(); ctx.arc(r.x - r.vx, r.y - r.vy * 1.6, 1.4, 0, Math.PI * 2); ctx.fill();
+        if (r.vy >= -1.2 || r.y < h * 0.12) { burst(r.x, r.y, r.colour); rockets.splice(i, 1); }
+      }
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const p = sparks[i];
+        p.vx *= 0.985; p.vy = p.vy * 0.985 + 0.045 * step;
+        p.x += p.vx * step; p.y += p.vy * step;
+        p.life -= p.decay * step;
+        if (p.life <= 0) { sparks.splice(i, 1); continue; }
+        const twinkle = p.crackle && p.life < 0.5 ? (Math.random() < 0.5 ? 0 : 1.6) : 1;
+        ctx.globalAlpha = Math.max(0, p.life) * twinkle;
+        ctx.fillStyle = p.colour;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size * (0.6 + p.life * 0.4), 0, Math.PI * 2); ctx.fill();
+        // Glitter: crackling sparks shed tiny white flecks as they die.
+        if (p.crackle && p.life < 0.45 && Math.random() < 0.3 && sparks.length < MAX_SPARKS) {
+          sparks.push({ x: p.x, y: p.y, vx: (Math.random() - 0.5) * 1.2, vy: (Math.random() - 0.5) * 1.2,
+                        life: 0.5, decay: 0.05, colour: '#FFFFFF', size: 0.9, crackle: false });
+        }
+      }
+      ctx.globalAlpha = 1;
+      if (elapsed < duration + 2500 || rockets.length || sparks.length) requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  }
+</script>
+</body>
+</html>

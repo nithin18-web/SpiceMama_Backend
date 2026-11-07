@@ -22,3 +22,6 @@ uploads/
 
 # Private backend connection configuration
 /backend/config/local.php
+
+# Launch marker created by POST /api/v1/admin/launch (runtime state, never committed)
+.launched

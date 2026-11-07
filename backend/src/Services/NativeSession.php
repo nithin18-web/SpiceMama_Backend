@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace SpiceMama\Services;
 use SpiceMama\Http\ApiException;
+use SpiceMama\Support\Paths;
 
 final class NativeSession implements SessionStore
 {
@@ -12,7 +13,7 @@ final class NativeSession implements SessionStore
         if (session_status() === PHP_SESSION_ACTIVE) {
             return;
         }
-        if (!str_starts_with($this->directory, '/')) {
+        if (!Paths::isAbsolute($this->directory)) {
             throw new ApiException(503, 'unavailable', 'Admin service is not configured.');
         }
         if (!is_dir($this->directory)) {

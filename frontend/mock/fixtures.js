@@ -62,4 +62,8 @@ export const products = [
     'Finger millet flour, for dosa, roti and mudde.',
     'Finger millet flour, for dosa, roti and mudde.',
     '500 g', null, 'Spice Mama Ragi Flour pack'),
+  { ...P(12, 'oont-chap-three-mango-mirchi-powder', 'Oont Chap Three Mango Mirchi Powder', 1,
+    'Pickle special mirchi powder, for pickles and daily cooking.',
+    'Oont Chap Three Mango Mirchi Powder is made for pickles and for daily cooking, by Andhra Standard Products, Guntur, the makers of Spice Mama.',
+    '500 g', null, 'Oont Chap Three Mango Mirchi Powder 500 g pack'), sort_order: 0 },
 ].map((p) => ({ ...p, images: p.images.map((im) => ({ ...im, id: p.id * 10 })) }));
