@@ -3,6 +3,7 @@
 // `accent_color` and `brand_line` on Product. Until then the look is matched by slug here,
 // and any new product gets a colour from the fallback list.
 const LOOKS = {
+  'oont-chap-three-mango-mirchi-powder': { c: '#D9261C', f: '#FBF4E6', line: 'Oont Chap · Three Mango' },
   'guntur-gold-premium-chilli-powder': { c: '#C8141C', f: '#FBF4E6', line: 'Spice Mama' },
   'chilli-powder-guntur-special': { c: '#F2D31B', f: '#2B1510', line: 'Spice Mama · Guntur Special' },
   'coriander-powder': { c: '#0A7A39', f: '#FBF4E6', line: 'Spice Mama · Aroma Special' },
