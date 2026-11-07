@@ -24,6 +24,11 @@ final class Kernel
     public function handle(Request $request): Response
     {
         try {
+            if ($request->method === 'POST' && $request->path === '/api/v1/launch') {
+                // Public Launch button (owner decision 2026-11-07); never starts a session.
+                $db = fn(): PDO => $this->db();
+                return (new AdminSiteController(new AdminGuard($this->session, $db, $this->clock), $db, $this->clock, $this->config))->launchPublic($request);
+            }
             if ($request->path !== '/api/v1/admin' && !str_starts_with($request->path, '/api/v1/admin/')) {
                 return (new CatalogueController(fn(): PdoCatalogueRepository => new PdoCatalogueRepository($this->db())))->handle($request);
             }

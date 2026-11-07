@@ -47,8 +47,9 @@ repo is the newest and complete copy** (that repo lacks the Diwali page and late
 
 ### Built on 2026-11-07 (upload package `dist/live-update-2026-11-07/`, Mac only)
 - New pack mockups, family artwork, recipe squares, Three Mango Mirchi Powder (first product).
-- **Launch button replaces the countdown**: the pre-launch page shows artwork; a signed-in admin sees
-  "Launch the website" → `POST /api/v1/admin/launch` creates `public_html/.launched` → fireworks 4 s → home page.
+- **Launch button replaces the countdown**: the pre-launch page shows artwork and a public "Launch the website"
+  button (owner decision: anyone may press it) → `POST /api/v1/launch` creates `public_html/.launched`
+  → fireworks 4 s → home page. `POST /api/v1/admin/launch` (admin session) still works as a fallback.
   `.htaccess` now checks that file instead of a time. See section 5.
 - Must be uploaded **before 00:00 IST Sun 8 Nov 2026**, otherwise the old timer rule opens the site by itself.
 
@@ -174,9 +175,8 @@ Template: the "Optional pre-launch page" block in `deploy/public_html.htaccess.e
 uncomment the 7 `Rewrite...` lines). The `.launched` dotfile is never downloadable (403).
 
 **Launch day**
-1. On the event laptop sign in at `https://spicemama.in/admin/`.
-2. Open `https://spicemama.in` — a "Launch the website" bar appears at the bottom (admins only).
-3. Press it: the server creates `.launched` (once, audited as `site.launched`), fireworks play for 4 seconds,
+1. Open `https://spicemama.in` — a "Launch the website" bar is at the bottom (no sign-in; anyone can press it).
+2. Press it: the server creates `.launched` (once, audited as `site.launched`), fireworks play for 4 seconds,
    then the home page opens. Everyone typing spicemama.in now gets the home page.
 - Rehearse the show without launching: `/maintenance.html?celebrate`.
 - Undo: delete `public_html/.launched` in File Manager (show hidden files).

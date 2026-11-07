@@ -32,7 +32,7 @@
 
   /* Family artwork on the page background (see assets/images/SOURCES.md). */
   .art { width: auto; max-width: min(100%, 560px); height: auto; max-height: 36vh; margin: 2px 0 0 }
-  /* Admin-only launch panel: shown when /api/v1/admin/me says an admin is signed in. It floats at the bottom of
+  /* Public launch panel (anyone may press it). It floats at the bottom of
      the screen so the button is always in view at the event, whatever the screen size. */
   .launch { position: fixed; z-index: 5; left: 50%; bottom: max(16px, env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: max-content; max-width: calc(100vw - 32px);
             display: grid; gap: 8px; justify-items: center; padding: 16px 22px; border: 1.5px dashed var(--red); border-radius: var(--r-lg); background: var(--white); box-shadow: 0 18px 50px rgba(43, 21, 16, .22) }
@@ -42,7 +42,7 @@
   .launch button[disabled] { opacity: .7; cursor: progress }
   .launch p { margin: 0; font-size: var(--fs-small); color: var(--ink-soft) }
   .launch .error { color: var(--bad); font-weight: 600 }
-  /* Diwali fireworks after an admin presses Launch (or with ?celebrate): full-screen canvas over a night sky. */
+  /* Diwali fireworks after Launch is pressed (or with ?celebrate): full-screen canvas over a night sky. */
   .sky { position: fixed; inset: 0; z-index: 10; pointer-events: none; opacity: 0; transition: opacity .8s ease;
          background: radial-gradient(120% 90% at 50% 100%, #2B1236 0%, #170A22 55%, #0B0612 100%) }
   .sky.on { opacity: 1 }
@@ -71,11 +71,11 @@
   <p class="date">Sunday, 8 November 2026</p>
   <p class="contact">Until then, reach us at <a href="tel:+919441547648">+91 94415 47648</a> or <a href="mailto:andhrastandardproducts@gmail.com">andhrastandardproducts@gmail.com</a></p>
 </main>
-  <div class="launch" id="launch-panel" hidden>
-    <button type="button" id="launch">🚀 Launch the website</button>
-    <p>You are signed in as an admin. This opens the website for everyone.</p>
-    <p class="error" id="launch-error" role="alert" hidden></p>
-  </div>
+<div class="launch" id="launch-panel">
+  <button type="button" id="launch">🚀 Launch the website</button>
+  <p>Press to open the Spice Mama website for everyone.</p>
+  <p class="error" id="launch-error" role="alert" hidden></p>
+</div>
 <div class="sky" id="sky" aria-hidden="true"><canvas id="fireworks"></canvas></div>
 <section class="hello" id="hello" aria-live="polite" hidden>
   <h2>Happy Diwali!</h2>
@@ -83,8 +83,8 @@
   <a href="/" id="enter">Enter the website</a>
 </section>
 <script>
-  // Pre-launch page. Visitors only see the message. A signed-in admin sees a Launch button: it asks the API
-  // to launch the site (creates the marker the web server checks), plays 4 seconds of fireworks, then opens
+  // Pre-launch page with a public Launch button (owner decision 2026-11-07: anyone may press it). It asks the
+  // API to launch the site (creates the marker the web server checks), plays 4 seconds of fireworks, then opens
   // the home page, which from that moment is served to everyone. ?celebrate previews the show without launching.
   (() => {
     const SHOW_MS = 4000;
@@ -118,12 +118,8 @@
       button.textContent = 'Launching…';
       error.hidden = true;
       try {
-        const csrf = await api('/admin/csrf');
-        const token = (await csrf.json())?.data?.csrf_token;
-        const res = await api('/admin/launch', { method: 'POST', headers: { 'X-CSRF-Token': token || '' } });
+        const res = await api('/launch', { method: 'POST' });
         if (res.ok) { panel.hidden = true; celebrate(true); return; }
-        if (res.status === 401) return fail('Your admin sign-in has ended. Sign in again at /admin/, then come back and press Launch.');
-        if (res.status === 403) return fail('The page was open too long. Reload it and press Launch again.');
         fail('The website could not be launched just now. Please try again.');
       } catch {
         fail('No connection to the server. Check the internet and try again.');
@@ -131,10 +127,8 @@
     });
 
     if (new URLSearchParams(location.search).has('celebrate')) {
+      panel.hidden = true;
       setTimeout(() => celebrate(false), 600);
-    } else {
-      // Only signed-in admins get the button; for everyone else this request just returns 401.
-      api('/admin/me').then((res) => { if (res.ok) panel.hidden = false; }).catch(() => {});
     }
   })();
 

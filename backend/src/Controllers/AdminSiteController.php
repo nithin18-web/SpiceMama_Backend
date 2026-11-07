@@ -3,51 +3,37 @@ declare(strict_types=1);
 namespace SpiceMama\Controllers;
 use SpiceMama\Http\{ApiException, Request, Response};
 use SpiceMama\Middleware\AdminGuard;
-use SpiceMama\Services\AuditLogger;
-use SpiceMama\Support\{Clock, Paths};
+use SpiceMama\Services\SiteLaunch;
+use SpiceMama\Support\Clock;
 use SpiceMama\Validation\AdminInput;
 
-/**
- * Site launch: an admin creates the marker file that public_html/.htaccess checks
- * (RewriteCond %{DOCUMENT_ROOT}/.launched !-f). Once it exists every visitor gets the
- * real site instead of the pre-launch page. Deleting the file brings the page back.
- */
+/** Site launch: see Services\SiteLaunch. */
 final class AdminSiteController
 {
     public function __construct(private readonly AdminGuard $guard, private readonly \Closure $db, private readonly Clock $clock, private readonly array $config) {}
 
+    /** POST /admin/launch — signed-in admin (session + CSRF). */
     public function launch(Request $request): Response
     {
         $admin = $this->guard->admin($request);
         AdminInput::noQuery($request->query);
-        $flag = self::flagPath($this->config);
-        if (!is_file($flag)) {
-            // Exclusive create: a second click (or a race) never rewrites the original launch time.
-            $handle = @fopen($flag, 'x');
-            if ($handle === false && !is_file($flag)) {
-                throw new \RuntimeException('Cannot create launch marker.');
-            }
-            if ($handle !== false) {
-                fwrite($handle, $this->clock->db() . "\n");
-                fclose($handle);
-                chmod($flag, 0644);
-                AuditLogger::record(($this->db)(), $admin['id'], 'site.launched', 'site', null, null, $this->clock->db());
-            }
-        }
-        return new Response(200, ['data' => ['launched' => true, 'launched_at' => trim((string) file_get_contents($flag))]]);
+        return new Response(200, ['data' => SiteLaunch::open($this->config, $this->db, $this->clock, $admin['id'], 'admin')]);
     }
 
-    /** `launch_flag` if configured, else public_html/.launched derived from upload_path (public_html/uploads/products). */
-    public static function flagPath(array $config): string
+    /**
+     * POST /launch — the public Launch button on the pre-launch page (owner decision 2026-11-07:
+     * anyone may press it). No session; the browser's Origin must be this site, so another
+     * website cannot trigger the launch from a visitor's browser.
+     */
+    public function launchPublic(Request $request): Response
     {
-        $flag = (string) ($config['launch_flag'] ?? '');
-        if ($flag === '') {
-            $uploads = rtrim((string) ($config['upload_path'] ?? ''), '/\\');
-            $flag = $uploads === '' ? '' : dirname($uploads, 2) . '/.launched';
+        AdminInput::noQuery($request->query);
+        $origin = (string) $request->header('origin');
+        $host = strtolower((string) $request->header('host'));
+        $originHost = strtolower((string) parse_url($origin, PHP_URL_HOST) . (parse_url($origin, PHP_URL_PORT) ? ':' . parse_url($origin, PHP_URL_PORT) : ''));
+        if ($origin === '' || $host === '' || $originHost !== $host) {
+            throw new ApiException(403, 'forbidden', 'Launch must be pressed on the website itself.');
         }
-        if (!Paths::isAbsolute($flag)) {
-            throw new ApiException(503, 'unavailable', 'Launch is not configured.');
-        }
-        return $flag;
+        return new Response(200, ['data' => SiteLaunch::open($this->config, $this->db, $this->clock, null, 'public')]);
     }
 }

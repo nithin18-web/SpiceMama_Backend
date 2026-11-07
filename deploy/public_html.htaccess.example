@@ -10,8 +10,8 @@ RewriteCond %{HTTPS} !=on
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
 # --- Optional pre-launch page ------------------------------------------------
-# Shows /maintenance.html instead of the site until an admin presses "Launch" on that page
-# (POST /api/v1/admin/launch creates /home/spicemam/public_html/.launched; dotfiles are denied below).
+# Shows /maintenance.html instead of the site until someone presses "Launch" on that page
+# (POST /api/v1/launch creates /home/spicemam/public_html/.launched; dotfiles are denied below).
 # Admin, API, assets and uploads keep working. Opening /?preview=TOKEN once sets a 7-day cookie so
 # that browser sees the real site. Replace TOKEN with a random value and uncomment to enable.
 # Undo a launch: delete public_html/.launched. After launch this block can be removed.

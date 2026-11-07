@@ -328,6 +328,21 @@ check(status(write('POST', '/admin/launch'), 200, 'launch again')['data']['launc
 check((int) $db->query("SELECT COUNT(*) FROM admin_audit_logs WHERE action='site.launched'")->fetchColumn() === 1, 'launch audited once');
 status(write('POST', '/admin/logout'), 204, 'logout after launch');
 
+// Public Launch button: no session, but the Origin must be this site.
+unlink($root . '/public/.launched');
+$site = ['host' => 'spicemama.in'];
+status(call('POST', '/launch', null, $site), 403, 'public launch without Origin');
+status(call('POST', '/launch', null, $site + ['origin' => 'https://evil.example']), 403, 'public launch from another site');
+status(call('POST', '/launch', null, $site + ['origin' => 'https://spicemama.in.evil.example']), 403, 'public launch from look-alike host');
+check(!is_file($root . '/public/.launched'), 'rejected public launches create no marker');
+status(call('POST', '/launch', null, $site + ['origin' => 'https://spicemama.in'], ['x' => '1']), 422, 'public launch rejects query');
+$public = status(call('POST', '/launch', null, $site + ['origin' => 'https://spicemama.in']), 200, 'public launch')['data'];
+check($public['launched'] === true && is_file($root . '/public/.launched'), 'public launch creates marker');
+check(status(call('POST', '/launch', null, $site + ['origin' => 'https://spicemama.in']), 200, 'public launch again')['data']['launched_at'] === $public['launched_at'], 'second public launch keeps original time');
+check((int) $db->query("SELECT COUNT(*) FROM admin_audit_logs WHERE action='site.launched' AND admin_id IS NULL AND details_json LIKE '%public%'")->fetchColumn() === 1, 'public launch audited once');
+status(call('GET', '/launch', null, $site + ['origin' => 'https://spicemama.in']), 404, 'GET /launch is not a route');
+status(call('GET', '/admin/me'), 401, 'public launch starts no admin session');
+
 // --- Throttling -------------------------------------------------------------
 for ($i = 0; $i < 5; ++$i) {
     status($login('owner@example.test', 'wrong'), 401, "failure $i");

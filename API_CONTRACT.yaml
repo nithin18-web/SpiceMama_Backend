@@ -241,6 +241,50 @@ paths:
       description: Invalidate server session and expire cookie. Requires authentication
         and CSRF. 204 has no response body.
       operationId: post_admin_logout
+  "/launch":
+    post:
+      summary: Launch the site from the public Launch button (no sign-in)
+      security: []
+      parameters:
+      - name: Origin
+        in: header
+        required: true
+        description: Must be this site's own origin; requests from other websites get 403.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Site is launched (idempotent; repeating returns the original time)
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - launched
+                    - launched_at
+                    properties:
+                      launched:
+                        type: boolean
+                      launched_at:
+                        type: string
+                        description: UTC timestamp of the first launch
+        '403':
+          "$ref": "#/components/responses/ErrorResponse"
+        '422':
+          "$ref": "#/components/responses/ErrorResponse"
+        '500':
+          "$ref": "#/components/responses/ErrorResponse"
+        '503':
+          "$ref": "#/components/responses/ErrorResponse"
+      description: Owner decision 2026-11-07 - anyone who opens the pre-launch page may press
+        Launch. Creates the public_html/.launched marker (audited with admin_id NULL); deleting
+        the marker restores the pre-launch page. No request body, no session.
+      operationId: post_launch
   "/admin/launch":
     post:
       summary: Launch the site (switch off the pre-launch page for everyone)
